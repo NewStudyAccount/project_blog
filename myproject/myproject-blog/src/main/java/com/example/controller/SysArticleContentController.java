@@ -7,11 +7,16 @@ import com.example.domain.req.SysArticleContentQueryPageReq;
 import com.example.domain.req.SysArticleContentReq;
 import com.example.domain.vo.SysArticleContentHtmlVo;
 import com.example.domain.vo.SysArticleContentVo;
+import com.example.domain.pojo.SysArticleContentHistory;
+import com.example.service.SysArticleContentHistoryService;
 import com.example.service.SysArticleContentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Tag(name = "文章内容")
 @RestController
@@ -20,6 +25,9 @@ public class SysArticleContentController {
 
     @Autowired
     private SysArticleContentService sysArticleContentService;
+
+    @Autowired
+    private SysArticleContentHistoryService historyService;
 
     @Operation(summary = "分页查询")
     @PostMapping("/list")
@@ -54,6 +62,30 @@ public class SysArticleContentController {
     public Response<?> updateSysArticleContent(@RequestBody SysArticleContentReq sysArticleContentReq) {
         int result = sysArticleContentService.updateSysArticleContentById(sysArticleContentReq);
         return Response.success(result);
+    }
+
+    @Operation(summary = "首次上传文章内容文件")
+    @PostMapping("upload")
+    public Response<?> uploadContent(@RequestParam("file") MultipartFile file,
+                                     @RequestParam("articleId") Long articleId) {
+        sysArticleContentService.uploadContent(file, articleId);
+        return Response.success("上传成功");
+    }
+
+    @Operation(summary = "覆盖上传文章内容文件")
+    @PostMapping("uploadOverride")
+    public Response<?> uploadOverride(@RequestParam("file") MultipartFile file,
+                                      @RequestParam("articleId") Long articleId,
+                                      @RequestParam(value = "confirmOverride", defaultValue = "false") boolean confirmOverride) {
+        sysArticleContentService.overrideUploadContent(file, articleId, confirmOverride);
+        return Response.success("覆盖上传成功");
+    }
+
+    @Operation(summary = "查询文章内容版本历史")
+    @GetMapping("/history/{articleId}")
+    public Response<List<SysArticleContentHistory>> getHistory(@PathVariable("articleId") Long articleId) {
+        List<SysArticleContentHistory> history = historyService.queryHistoryByArticleId(articleId);
+        return Response.success(history);
     }
 
 }

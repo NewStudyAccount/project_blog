@@ -81,7 +81,6 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
     public Long uploadFile(Long ossId,String fileName,String contentType,byte[] data) {
         String url = "";
 
-        long ossNextId = SnowflakeIdUtil.ossNextId();
         List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
         if (CollectionUtils.isEmpty(sysOssConfigs)) {
             throw new  RuntimeException("未找到有效的OSS配置");
@@ -92,7 +91,6 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
         if (ossId!= null) {
             SysOssFile sysOssFile = this.baseMapper.selectById(ossId);
             newFileName = sysOssFile.getFileName();
-            ossNextId = sysOssFile.getOssId();
         }
 
 
@@ -104,15 +102,16 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
         //执行上传文件
         ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,data);
 
-        SysOssFile sysOssFile = new SysOssFile(ossNextId,newFileName,fileName,split[1],url,contentType);
+        SysOssFile sysOssFile = new SysOssFile(newFileName,fileName,split[1],url,contentType);
 
         if (ossId == null){
             insertSysOssFile(sysOssFile);
         }else {
+            sysOssFile.setOssId(ossId);
             this.baseMapper.updateById(sysOssFile);
         }
 
-        return ossNextId;
+        return sysOssFile.getOssId();
     }
 
     @Override

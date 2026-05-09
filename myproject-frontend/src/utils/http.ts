@@ -91,6 +91,12 @@ http.interceptors.response.use(
         return response.data
       }
 
+      // 检查业务状态码，非 "200" 时 reject 以便 catch 处理
+      const res = response.data
+      if (res && res.code && res.code !== '200') {
+        return Promise.reject({ response: { data: res } })
+      }
+
       return response.data
     },
     (error) => {

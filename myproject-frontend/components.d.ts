@@ -12,6 +12,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ArticleNavBar: typeof import('./src/components/ArticleNavBar/index.vue')['default']
+    ContentHistory: typeof import('./src/components/ContentHistory/index.vue')['default']
+    ContentUpload: typeof import('./src/components/ContentUpload/index.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']

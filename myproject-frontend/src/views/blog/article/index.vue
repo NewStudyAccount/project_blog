@@ -52,6 +52,8 @@
             <el-button type="text" @click.stop="handleView(row)">查看</el-button>
             <el-button type="text" @click.stop="handleEdit(row)">编辑</el-button>
             <el-button type="text" @click.stop="handleEditContent(row)">编辑内容</el-button>
+            <el-button type="text" @click.stop="handleUploadContent(row)">上传内容</el-button>
+            <el-button type="text" @click.stop="handleViewHistory(row)">版本历史</el-button>
             <el-button type="text" @click.stop="handleViewDoc(row)">查看文档</el-button>
             <el-button type="text" @click.stop="handleDelete(row)">删除</el-button>
           </template>
@@ -105,6 +107,9 @@
         <el-button type="primary" :loading="contentSaving" @click="handleContentSubmit">保存</el-button>
       </template>
     </el-dialog>
+
+    <ContentUpload ref="contentUploadRef" @success="getList" />
+    <ContentHistory ref="contentHistoryRef" />
   </div>
 </template>
 
@@ -119,6 +124,8 @@
   import type { SysArticleContent } from '@/api/blog/sysArticleContentApi'
 
   const MarkdownEditor = defineAsyncComponent(() => import('@/components/MarkdownEditor/index.vue'))
+  import ContentUpload from '@/components/ContentUpload/index.vue'
+  import ContentHistory from '@/components/ContentHistory/index.vue'
 
   const router = useRouter()
 
@@ -259,6 +266,8 @@
   const contentDialogVisible = ref(false)
   const contentSaving = ref(false)
   const contentForm = reactive<Partial<SysArticleContent>>({})
+  const contentUploadRef = ref()
+  const contentHistoryRef = ref()
 
   const handleEditContent = async (row: SysArticle) => {
     Object.keys(contentForm).forEach(key => {
@@ -281,6 +290,14 @@
     console.log("查看文章内容", row.id)
 
     router.push(`/blog/doc/${row.id}`)
+  }
+
+  const handleUploadContent = (row: SysArticle) => {
+    contentUploadRef.value?.open(row.id)
+  }
+
+  const handleViewHistory = (row: SysArticle) => {
+    contentHistoryRef.value?.open(row.id)
   }
 
   const handleContentSubmit = async () => {

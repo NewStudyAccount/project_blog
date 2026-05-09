@@ -61,3 +61,45 @@ export function updateSysArticleContent(data: Partial<SysArticleContent>) {
   })
 }
 
+export function uploadContent(file: File, articleId: string) {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('articleId', articleId)
+  return http({
+    url: '/sysArticleContent/upload',
+    method: 'post',
+    data: formData,
+    headers: { repeatSubmit: false }
+  })
+}
+
+export function uploadOverride(file: File, articleId: string, confirmOverride: boolean = false) {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('articleId', articleId)
+  formData.append('confirmOverride', String(confirmOverride))
+  return http({
+    url: '/sysArticleContent/uploadOverride',
+    method: 'post',
+    data: formData,
+    headers: { repeatSubmit: false }
+  })
+}
+
+export interface ContentHistory {
+  id: string
+  articleId: string
+  ossId: string
+  version: number
+  replacedBy: string
+  replacedAt: string
+  remark: string
+}
+
+export function getContentHistory(articleId: string) {
+  return http({
+    url: `/sysArticleContent/history/${articleId}`,
+    method: 'get'
+  })
+}
+

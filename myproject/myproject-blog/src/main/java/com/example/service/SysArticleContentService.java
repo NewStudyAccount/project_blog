@@ -8,6 +8,7 @@ import com.example.domain.req.SysArticleContentQueryPageReq;
 import com.example.domain.req.SysArticleContentReq;
 import com.example.domain.vo.SysArticleContentHtmlVo;
 import com.example.domain.vo.SysArticleContentVo;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface SysArticleContentService extends IService<SysArticleContent> {
 
@@ -20,4 +21,8 @@ public interface SysArticleContentService extends IService<SysArticleContent> {
     int addSysArticleContent(SysArticleContentReq sysArticleContentReq);
 
     int updateSysArticleContentById(SysArticleContentReq sysArticleContentReq);
+
+    void uploadContent(MultipartFile file, Long articleId);
+
+    void overrideUploadContent(MultipartFile file, Long articleId, boolean confirmOverride);
 }
