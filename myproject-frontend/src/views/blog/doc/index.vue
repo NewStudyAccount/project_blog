@@ -37,13 +37,19 @@
         </nav>
       </aside>
     </div>
+
+    <transition name="fade">
+      <div v-if="showBackToTop" class="back-to-top" @click="scrollToTop">
+        <el-icon :size="20"><ArrowUp /></el-icon>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft } from '@element-plus/icons-vue'
+import { ArrowLeft, ArrowUp } from '@element-plus/icons-vue'
 import { getSysArticleContentHtmlByArticleId } from '@/api/blog/sysArticleContentApi'
 import { getSysArticleById } from '@/api/blog/sysArticleApi'
 
@@ -63,6 +69,7 @@ const loading = ref(true)
 const error = ref('')
 const tocItems = ref<TocItem[]>([])
 const activeTocId = ref('')
+const showBackToTop = ref(false)
 
 let observer: IntersectionObserver | null = null
 
@@ -87,6 +94,36 @@ const generateToc = () => {
   if (items.length > 0) {
     activeTocId.value = items[0].id
   }
+}
+
+const setupCodeCopy = () => {
+  const container = document.querySelector('.markdown-body')
+  if (!container) return
+
+  const pres = container.querySelectorAll('pre')
+  pres.forEach((pre) => {
+    if (pre.querySelector('.code-copy-btn')) return
+
+    pre.style.position = 'relative'
+
+    const btn = document.createElement('button')
+    btn.className = 'code-copy-btn'
+    btn.textContent = '复制'
+    btn.addEventListener('click', () => {
+      const code = pre.querySelector('code')
+      const text = code?.textContent || ''
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '已复制'
+        btn.classList.add('copied')
+        setTimeout(() => {
+          btn.textContent = '复制'
+          btn.classList.remove('copied')
+        }, 2000)
+      })
+    })
+
+    pre.appendChild(btn)
+  })
 }
 
 const setupObserver = () => {
@@ -122,19 +159,28 @@ const scrollToHeading = (id: string) => {
   }
 }
 
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+const handleScroll = () => {
+  showBackToTop.value = window.scrollY > 300
+}
+
 const fetchHtmlContent = async () => {
   loading.value = true
   error.value = ''
   try {
     const res = await getSysArticleContentHtmlByArticleId(articleId)
     htmlContent.value = res.data?.htmlContent || ''
-    await nextTick()
-    generateToc()
-    setupObserver()
   } catch (e: any) {
     error.value = e?.message || '加载文档内容失败'
   } finally {
     loading.value = false
+    await nextTick()
+    generateToc()
+    setupObserver()
+    setupCodeCopy()
   }
 }
 
@@ -154,6 +200,7 @@ const goBack = () => {
 onMounted(() => {
   fetchArticleTitle()
   fetchHtmlContent()
+  window.addEventListener('scroll', handleScroll)
 })
 
 onUnmounted(() => {
@@ -161,13 +208,29 @@ onUnmounted(() => {
     observer.disconnect()
     observer = null
   }
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
 <style scoped lang="scss">
+:global(html),
+:global(body) {
+  min-height: 100vh;
+  background: #f5f7f9;
+  margin: 0;
+  padding: 0;
+}
+
+:global(#app) {
+  height: auto;
+  min-height: 100vh;
+  background: #f5f7f9;
+}
+
 .doc-standalone-page {
   min-height: 100vh;
   background: #f5f7f9;
+  width: 100%;
 }
 
 .doc-header {
@@ -381,6 +444,32 @@ onUnmounted(() => {
     }
   }
 
+  :deep(.code-copy-btn) {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 12px;
+    font-size: 12px;
+    line-height: 1;
+    color: #666;
+    background: #e8e8e8;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    z-index: 1;
+
+    &:hover {
+      background: #d0d0d0;
+      color: #333;
+    }
+
+    &.copied {
+      background: #67c23a;
+      color: #fff;
+    }
+  }
+
   :deep(table) {
     width: 100%;
     margin: 0 0 14px;
@@ -415,5 +504,38 @@ onUnmounted(() => {
     height: auto;
     border-radius: 4px;
   }
+}
+
+.back-to-top {
+  position: fixed;
+  right: 32px;
+  bottom: 40px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #409eff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(64, 158, 255, 0.4);
+  transition: transform 0.2s, opacity 0.2s;
+  z-index: 200;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(64, 158, 255, 0.5);
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

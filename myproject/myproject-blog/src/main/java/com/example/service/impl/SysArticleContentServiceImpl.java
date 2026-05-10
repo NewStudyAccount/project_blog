@@ -118,24 +118,34 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
         Long articleId = sysArticleContentReq.getArticleId();
         String content = sysArticleContentReq.getContent();
 
-        LambdaQueryWrapper<SysArticleContent> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(SysArticleContent::getArticleId, articleId);
-
-        SysArticleContent sysArticleContent = baseMapper.selectOne(lambdaQueryWrapper);
-        Long ossId = sysArticleContent.getOssId();
-        SysArticle article = sysArticleService.getById(articleId);
-
-        if (content != null && !content.isEmpty()) {
-
-            //更新历史oss文件
-            byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-            String fileName = article.getTitle()+".md";
-            ossFileService.uploadFile(ossId,fileName, "text/markdown", contentBytes);
-
+        if (content == null || content.isEmpty()) {
+            throw new BizException("文章内容不能为空");
         }
 
+        SysArticle article = sysArticleService.getById(articleId);
+        if (article == null) {
+            throw new BizException("文章不存在");
+        }
 
-        return baseMapper.updateById(sysArticleContent);
+        LambdaQueryWrapper<SysArticleContent> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysArticleContent::getArticleId, articleId);
+        SysArticleContent sysArticleContent = baseMapper.selectOne(queryWrapper);
+
+        byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+        String fileName = article.getTitle() + ".md";
+
+        if (sysArticleContent != null && sysArticleContent.getOssId() != null) {
+            // 更新已有 OSS 文件
+            ossFileService.uploadFile(sysArticleContent.getOssId(), fileName, "text/markdown", contentBytes);
+            return 1;
+        } else {
+            // 新建 OSS 文件
+            Long ossId = ossFileService.uploadFile(null, fileName, "text/markdown", contentBytes);
+            SysArticleContent newContent = new SysArticleContent();
+            newContent.setArticleId(articleId);
+            newContent.setOssId(ossId);
+            return baseMapper.insert(newContent);
+        }
     }
 
     @Override

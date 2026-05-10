@@ -8,16 +8,6 @@
                       <el-input v-model="queryParams.title" placeholder="请输入文章名" clearable @keyup.enter="handleQuery" />
                     </el-form-item>
                   </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="预览图" prop="cover">
-                      <el-input v-model="queryParams.cover" placeholder="请输入预览图" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-form-item label="删除标志" prop="isDeleted">
-                      <el-input v-model="queryParams.isDeleted" placeholder="请输入删除标志" clearable @keyup.enter="handleQuery" />
-                    </el-form-item>
-                  </el-col>
           <el-col :span="8" style="margin-top: 4px;">
             <el-button type="primary" @click="handleQuery">
               <el-icon><Search /></el-icon>搜索
@@ -42,10 +32,8 @@
 
       <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="文章id" align="center" prop="id" />
             <el-table-column label="文章名" align="center" prop="title" />
             <el-table-column label="预览图" align="center" prop="cover" />
-            <el-table-column label="删除标志" align="center" prop="isDeleted" />
             <el-table-column label="阅读次数" align="center" prop="readNum" />
         <el-table-column label="操作" width="300" align="center">
           <template #default="{ row }">
@@ -303,10 +291,6 @@
   const handleContentSubmit = async () => {
     contentSaving.value = true
 
-
-    console.log("保存文章内容", JSON.stringify(contentForm))
-
-
     try {
       if (contentForm.articleId) {
         await updateSysArticleContent(contentForm)
@@ -316,12 +300,18 @@
         ElMessage.success('内容新增成功')
       }
       contentDialogVisible.value = false
-    } catch {
-      ElMessage.error('内容保存失败')
+    } catch(error: any) {
+      // 拦截器已显示错误信息，这里只需处理业务逻辑
+      // 只在没有错误消息时显示通用提示
+      if (!error?.message) {
+        ElMessage.error('内容保存失败')
+      }
     } finally {
       contentSaving.value = false
     }
   }
+
+
   onMounted(() => {
     getList()
   })

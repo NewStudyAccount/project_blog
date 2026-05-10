@@ -83,8 +83,6 @@ http.interceptors.request.use(
 http.interceptors.response.use(
     (response: AxiosResponse) => {
 
-      console.log('响应数据:', response)
-      console.log('响应数据:', response.data)
 
       // 处理文件下载：如果是 blob 类型，直接返回
       if (response.config.responseType === 'blob') {
@@ -94,7 +92,9 @@ http.interceptors.response.use(
       // 检查业务状态码，非 "200" 时 reject 以便 catch 处理
       const res = response.data
       if (res && res.code && res.code !== '200') {
-        return Promise.reject({ response: { data: res } })
+          // 显示业务错误信息
+          ElMessage.error(res.msg || '请求失败')
+          return Promise.reject(new Error(res.msg || '请求失败'))
       }
 
       return response.data
@@ -118,7 +118,7 @@ http.interceptors.response.use(
             ElMessage.error('服务器错误')
             break
           default:
-            ElMessage.error(data?.message || '请求失败')
+            ElMessage.error(data?.msg || '请求失败')
         }
       } else {
         ElMessage.error('网络错误，请检查网络连接')
