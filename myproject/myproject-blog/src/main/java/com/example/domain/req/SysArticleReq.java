@@ -28,7 +28,7 @@ public class SysArticleReq {
     private List<Long> tagIds;
 
     //分类
-    private Long categoryId;
+    private List<Long> categoryIds;
 
     private String content;
 

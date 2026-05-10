@@ -37,9 +37,8 @@
 
       <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="分类id" align="center" prop="id" />
             <el-table-column label="分类名" align="center" prop="name" />
-            <el-table-column label="删除标志" align="center" prop="isDeleted" />
+            <el-table-column label="创建时间" align="center" prop="createTime" />
         <el-table-column label="操作" width="180" align="center">
           <template #default="{ row }">
             <el-button type="text" @click.stop="handleView(row)">查看</el-button>

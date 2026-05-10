@@ -2,14 +2,16 @@ package com.example.controller;
 
 import com.example.domain.Response;
 import com.example.domain.TableDataInfo;
-import com.example.domain.pojo.SysArticle;
 import com.example.domain.req.SysArticleQueryPageReq;
 import com.example.domain.req.SysArticleReq;
+import com.example.domain.vo.SysArticleVo;
 import com.example.service.SysArticleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "文章表")
 @RestController
@@ -21,29 +23,29 @@ public class SysArticleController {
 
     @Operation(summary = "分页查询")
     @PostMapping("/list")
-    public Response<TableDataInfo<SysArticle>> list(@RequestBody SysArticleQueryPageReq pageReq) {
-        TableDataInfo<SysArticle> tableDataInfo = sysArticleService.querySysArticleListPage(pageReq);
+    public Response<TableDataInfo<SysArticleVo>> list(@RequestBody SysArticleQueryPageReq pageReq) {
+        TableDataInfo<SysArticleVo> tableDataInfo = sysArticleService.querySysArticleListPage(pageReq);
         return Response.success(tableDataInfo);
     }
 
     @Operation(summary = "根据ID查询")
     @GetMapping("/{id}")
-    public Response<SysArticle> queryById(@PathVariable("id") Long id) {
-        SysArticle entity = sysArticleService.queryById(id);
-        return Response.success(entity);
+    public Response<SysArticleVo> queryById(@PathVariable("id") Long id) {
+        SysArticleVo vo = sysArticleService.queryVoById(id);
+        return Response.success(vo);
     }
 
     @Operation(summary = "新增")
     @PostMapping("add")
-    public Response<?> addSysArticle(@RequestBody SysArticle entity) {
-        int result = sysArticleService.addSysArticle(entity);
+    public Response<?> addSysArticle(@RequestBody SysArticleReq req) {
+        int result = sysArticleService.addSysArticle(req);
         return Response.success(result);
     }
 
     @Operation(summary = "修改")
     @PostMapping("update")
-    public Response<?> updateSysArticle(@RequestBody SysArticle entity) {
-        int result = sysArticleService.updateSysArticleById(entity);
+    public Response<?> updateSysArticle(@RequestBody SysArticleReq req) {
+        int result = sysArticleService.updateSysArticleById(req);
         return Response.success(result);
     }
 

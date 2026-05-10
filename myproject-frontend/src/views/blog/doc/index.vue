@@ -22,20 +22,34 @@
       <div class="doc-content-area">
         <div class="doc-content markdown-body" v-html="htmlContent"></div>
       </div>
-      <aside v-if="tocItems.length" class="doc-toc">
-        <div class="toc-title">目录</div>
-        <nav class="toc-list">
-          <a
-            v-for="item in tocItems"
-            :key="item.id"
-            :class="['toc-item', { active: activeTocId === item.id }]"
-            :style="{ paddingLeft: 12 + (item.level - 1) * 16 + 'px' }"
-            @click.prevent="scrollToHeading(item.id)"
-          >
-            {{ item.text }}
-          </a>
-        </nav>
-      </aside>
+      <div class="doc-sidebar">
+        <aside v-if="articleCategories.length" class="doc-toc">
+          <div class="toc-title">分类</div>
+          <div class="tag-list">
+            <el-tag v-for="cat in articleCategories" :key="cat.id" size="small">{{ cat.name }}</el-tag>
+          </div>
+        </aside>
+        <aside v-if="articleTags.length" class="doc-toc">
+          <div class="toc-title">标签</div>
+          <div class="tag-list">
+            <el-tag v-for="tag in articleTags" :key="tag.id" size="small" type="info">{{ tag.name }}</el-tag>
+          </div>
+        </aside>
+        <aside v-if="tocItems.length" class="doc-toc">
+          <div class="toc-title">目录</div>
+          <nav class="toc-list">
+            <a
+              v-for="item in tocItems"
+              :key="item.id"
+              :class="['toc-item', { active: activeTocId === item.id }]"
+              :style="{ paddingLeft: 12 + (item.level - 1) * 16 + 'px' }"
+              @click.prevent="scrollToHeading(item.id)"
+            >
+              {{ item.text }}
+            </a>
+          </nav>
+        </aside>
+      </div>
     </div>
 
     <transition name="fade">
@@ -70,6 +84,8 @@ const error = ref('')
 const tocItems = ref<TocItem[]>([])
 const activeTocId = ref('')
 const showBackToTop = ref(false)
+const articleCategories = ref<{ id: number; name: string }[]>([])
+const articleTags = ref<{ id: number; name: string }[]>([])
 
 let observer: IntersectionObserver | null = null
 
@@ -188,6 +204,8 @@ const fetchArticleTitle = async () => {
   try {
     const res = await getSysArticleById(articleId)
     articleTitle.value = res.data?.title || '文档展示'
+    articleCategories.value = res.data?.categories || []
+    articleTags.value = res.data?.tags || []
   } catch {
     articleTitle.value = '文档展示'
   }
@@ -285,7 +303,7 @@ onUnmounted(() => {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
-.doc-toc {
+.doc-sidebar {
   width: 240px;
   flex-shrink: 0;
   position: sticky;
@@ -293,6 +311,12 @@ onUnmounted(() => {
   align-self: flex-start;
   max-height: calc(100vh - 96px);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doc-toc {
   background: #fff;
   border-radius: 8px;
   padding: 16px 0;
@@ -337,6 +361,13 @@ onUnmounted(() => {
       background: #ecf5ff;
       font-weight: 500;
     }
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 16px;
   }
 }
 

@@ -8,6 +8,25 @@ export interface SysArticle {
   readNum: number
 }
 
+export interface SysArticleVo {
+  id: string
+  title: string
+  cover: string
+  isDeleted: string
+  readNum: number
+  categories: { id: number; name: string }[]
+  tags: { id: number; name: string }[]
+}
+
+export interface SysArticleReq {
+  id?: string
+  title?: string
+  cover?: string
+  tagIds?: number[]
+  categoryIds?: number[]
+  content?: string
+}
+
 export interface PageQuery {
   pageNum: number
   pageSize: number
@@ -38,7 +57,7 @@ export function getSysArticleById(id: string) {
   })
 }
 
-export function addSysArticle(data: Partial<SysArticle>) {
+export function addSysArticle(data: SysArticleReq) {
   return http({
     url: '/sysArticle/add',
     method: 'post',
@@ -46,7 +65,7 @@ export function addSysArticle(data: Partial<SysArticle>) {
   })
 }
 
-export function updateSysArticle(data: Partial<SysArticle>) {
+export function updateSysArticle(data: SysArticleReq) {
   return http({
     url: '/sysArticle/update',
     method: 'post',

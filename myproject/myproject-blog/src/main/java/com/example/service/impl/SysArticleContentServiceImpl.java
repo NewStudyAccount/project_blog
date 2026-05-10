@@ -22,6 +22,7 @@ import com.example.service.SysArticleService;
 import com.example.utils.MarkDownUtil;
 import com.example.utils.SecurityUtils;
 import com.example.utils.SnowflakeIdUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -133,19 +134,22 @@ public class SysArticleContentServiceImpl extends ServiceImpl<SysArticleContentM
 
         byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
         String fileName = article.getTitle() + ".md";
+        Long ossId = null;
 
         if (sysArticleContent != null && sysArticleContent.getOssId() != null) {
             // 更新已有 OSS 文件
             ossFileService.uploadFile(sysArticleContent.getOssId(), fileName, "text/markdown", contentBytes);
-            return 1;
+            ossId = sysArticleContent.getOssId();
         } else {
             // 新建 OSS 文件
-            Long ossId = ossFileService.uploadFile(null, fileName, "text/markdown", contentBytes);
-            SysArticleContent newContent = new SysArticleContent();
-            newContent.setArticleId(articleId);
-            newContent.setOssId(ossId);
-            return baseMapper.insert(newContent);
+            ossId = ossFileService.uploadFile(null, fileName, "text/markdown", contentBytes);
         }
+
+        LambdaUpdateWrapper<SysArticleContent> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper
+                .set(ossId!=null,SysArticleContent::getOssId, ossId)
+                .eq(SysArticleContent::getArticleId, articleId);
+        return baseMapper.update(updateWrapper);
     }
 
     @Override

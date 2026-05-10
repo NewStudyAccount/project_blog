@@ -37,9 +37,8 @@
 
       <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="" align="center" prop="id" />
             <el-table-column label="标签名" align="center" prop="name" />
-            <el-table-column label="" align="center" prop="idDeleted" />
+            <el-table-column label="创建时间" align="center" prop="createTime" />
         <el-table-column label="操作" width="180" align="center">
           <template #default="{ row }">
             <el-button type="text" @click.stop="handleView(row)">查看</el-button>
@@ -63,7 +62,7 @@
                 <el-form-item label="标签名" prop="name">
                       <el-input v-model="form.name" placeholder="请输入标签名" />
                 </el-form-item>
-                <el-form-item label="" prop="idDeleted">
+                <el-form-item label="创建时间" prop="createTime">
                       <el-input v-model="form.idDeleted" placeholder="请输入" />
                 </el-form-item>
       </el-form>
@@ -75,9 +74,8 @@
 
     <el-dialog v-model="viewDialogVisible" title="详情" width="800px" destroy-on-close>
       <el-descriptions :column="2" border>
-            <el-descriptions-item label="">{{ currentRow?.id }}</el-descriptions-item>
             <el-descriptions-item label="标签名">{{ currentRow?.name }}</el-descriptions-item>
-            <el-descriptions-item label="">{{ currentRow?.idDeleted }}</el-descriptions-item>
+            <el-descriptions-item label="创建时间">{{ currentRow?.createTime }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>

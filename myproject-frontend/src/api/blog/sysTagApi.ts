@@ -1,9 +1,10 @@
 import http from '@/utils/http'
 
 export interface SysTag {
-  id: number
+  id: string
   name: string
   idDeleted: string
+  createTime: string
 }
 
 export interface PageQuery {

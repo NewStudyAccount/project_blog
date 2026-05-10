@@ -33,7 +33,21 @@
       <el-table v-loading="loading" :data="dataList" @row-click="rowClick" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" align="center" />
             <el-table-column label="文章名" align="center" prop="title" />
-            <el-table-column label="预览图" align="center" prop="cover" />
+            <el-table-column label="预览图" align="center" width="100">
+              <template #default="{ row }">
+                <el-image v-if="row.cover" :src="row.cover" fit="cover" style="width: 60px; height: 60px; border-radius: 4px;" preview-teleported :preview-src-list="[row.cover]" />
+              </template>
+            </el-table-column>
+            <el-table-column label="分类" align="center">
+              <template #default="{ row }">
+                <el-tag v-for="cat in row.categories" :key="cat.id" size="small" style="margin: 2px;">{{ cat.name }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="标签" align="center">
+              <template #default="{ row }">
+                <el-tag v-for="tag in row.tags" :key="tag.id" size="small" type="info" style="margin: 2px;">{{ tag.name }}</el-tag>
+              </template>
+            </el-table-column>
             <el-table-column label="阅读次数" align="center" prop="readNum" />
         <el-table-column label="操作" width="300" align="center">
           <template #default="{ row }">
@@ -63,13 +77,17 @@
                       <el-input v-model="form.title" placeholder="请输入文章名" />
                 </el-form-item>
                 <el-form-item label="预览图" prop="cover">
-                      <el-input v-model="form.cover" placeholder="请输入预览图" />
+                      <ImageUpload v-model="form.cover" :limit="1" />
                 </el-form-item>
-                <el-form-item label="删除标志" prop="isDeleted">
-                      <el-input v-model="form.isDeleted" placeholder="请输入删除标志" />
+                <el-form-item label="分类" prop="categoryIds">
+                      <el-select v-model="form.categoryIds" multiple placeholder="请选择分类" style="width: 100%;">
+                        <el-option v-for="cat in categoryOptions" :key="cat.id" :label="cat.name" :value="cat.id" />
+                      </el-select>
                 </el-form-item>
-                <el-form-item label="阅读次数" prop="readNum">
-                      <el-input v-model="form.readNum" placeholder="请输入阅读次数" />
+                <el-form-item label="标签" prop="tagIds">
+                      <el-select v-model="form.tagIds" multiple placeholder="请选择标签" style="width: 100%;">
+                        <el-option v-for="tag in tagOptions" :key="tag.id" :label="tag.name" :value="tag.id" />
+                      </el-select>
                 </el-form-item>
       </el-form>
       <template #footer>
@@ -82,8 +100,15 @@
       <el-descriptions :column="2" border>
             <el-descriptions-item label="文章id">{{ currentRow?.id }}</el-descriptions-item>
             <el-descriptions-item label="文章名">{{ currentRow?.title }}</el-descriptions-item>
-            <el-descriptions-item label="预览图">{{ currentRow?.cover }}</el-descriptions-item>
-            <el-descriptions-item label="删除标志">{{ currentRow?.isDeleted }}</el-descriptions-item>
+            <el-descriptions-item label="预览图">
+              <el-image v-if="currentRow?.cover" :src="currentRow.cover" fit="cover" style="max-width: 200px; max-height: 200px; border-radius: 4px;" preview-teleported :preview-src-list="[currentRow.cover]" />
+            </el-descriptions-item>
+            <el-descriptions-item label="分类">
+              <el-tag v-for="cat in currentRow?.categories" :key="cat.id" size="small" style="margin: 2px;">{{ cat.name }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item label="标签">
+              <el-tag v-for="tag in currentRow?.tags" :key="tag.id" size="small" type="info" style="margin: 2px;">{{ tag.name }}</el-tag>
+            </el-descriptions-item>
             <el-descriptions-item label="阅读次数">{{ currentRow?.readNum }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
@@ -106,19 +131,22 @@
   import { useRouter } from 'vue-router'
   import { Search, Refresh, Plus, Delete } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
-  import { listSysArticle, getSysArticleById,deleteSysArticle, addSysArticle, updateSysArticle } from '@/api/blog/sysArticleApi'
-  import type { SysArticle } from '@/api/blog/sysArticleApi'
+  import { listSysArticle, getSysArticleById, deleteSysArticle, addSysArticle, updateSysArticle } from '@/api/blog/sysArticleApi'
+  import type { SysArticleVo, SysArticleReq } from '@/api/blog/sysArticleApi'
   import { getSysArticleContentByArticleId, addSysArticleContent, updateSysArticleContent } from '@/api/blog/sysArticleContentApi'
   import type { SysArticleContent } from '@/api/blog/sysArticleContentApi'
+  import { listSysCategory } from '@/api/blog/sysCategoryApi'
+  import { listSysTag } from '@/api/blog/sysTagApi'
 
   const MarkdownEditor = defineAsyncComponent(() => import('@/components/MarkdownEditor/index.vue'))
   import ContentUpload from '@/components/ContentUpload/index.vue'
   import ContentHistory from '@/components/ContentHistory/index.vue'
+  import ImageUpload from '@/components/ImageUpload/index.vue'
 
   const router = useRouter()
 
   const loading = ref(false)
-  const dataList = ref<SysArticle[]>([])
+  const dataList = ref<SysArticleVo[]>([])
   const total = ref(0)
   const queryParams = reactive({
     pageQuery: {
@@ -133,12 +161,32 @@
   const formDialogVisible = ref(false)
   const viewDialogVisible = ref(false)
   const dialogTitle = ref('')
-  const currentRow = ref<SysArticle>()
-  const selectedRow = ref<SysArticle>()
+  const currentRow = ref<SysArticleVo>()
+  const selectedRow = ref<SysArticleVo>()
   const single = ref(true)
   const formRef = ref()
-  const form = reactive<Partial<SysArticle>>({})
+  const form = reactive<SysArticleReq>({
+    title: undefined,
+    cover: undefined,
+    tagIds: [],
+    categoryIds: [],
+  })
   const rules = reactive<Record<string, any[]>>({})
+
+  // 分类和标签选项
+  const categoryOptions = ref<{ id: number; name: string }[]>([])
+  const tagOptions = ref<{ id: number; name: string }[]>([])
+
+  const loadOptions = async () => {
+    try {
+      const [catRes, tagRes] = await Promise.all([
+        listSysCategory({ pageQuery: { pageNum: 1, pageSize: 100 } }),
+        listSysTag({ pageQuery: { pageNum: 1, pageSize: 100 } }),
+      ])
+      categoryOptions.value = catRes.data.rows || []
+      tagOptions.value = tagRes.data.rows || []
+    } catch {}
+  }
 
   const getList = async () => {
     loading.value = true
@@ -173,19 +221,23 @@
   }
 
   const handleAdd = () => {
-    dialogTitle.value = '新增文章表'
+    dialogTitle.value = '新增文章'
     currentRow.value = undefined
     resetForm()
     formDialogVisible.value = true
   }
 
-  const handleEdit = async(row: SysArticle) => {
-    dialogTitle.value = '编辑文章表'
+  const handleEdit = async(row: SysArticleVo) => {
+    dialogTitle.value = '编辑文章'
     currentRow.value = row
     try {
-      // 调用接口获取最新数据
       const res = await getSysArticleById(row.id)
-      Object.assign(form, res.data)
+      const data = res.data
+      form.id = data.id
+      form.title = data.title
+      form.cover = data.cover
+      form.tagIds = (data.tags || []).map((t: any) => t.id)
+      form.categoryIds = (data.categories || []).map((c: any) => c.id)
     } catch (error) {
       ElMessage.error('获取数据失败')
       return
@@ -193,9 +245,8 @@
     formDialogVisible.value = true
   }
 
-  const handleView = async (row: SysArticle) => {
+  const handleView = async (row: SysArticleVo) => {
     try {
-      // 调用接口获取最新数据用于查看
       const res = await getSysArticleById(row.id)
       currentRow.value = res.data
       viewDialogVisible.value = true
@@ -204,7 +255,7 @@
     }
   }
 
-  const handleDelete = async (row?: SysArticle) => {
+  const handleDelete = async (row?: SysArticleVo) => {
     if (!row) return
     try {
       await ElMessageBox.confirm('是否确认删除选中的数据?', '警告', { type: 'warning' })
@@ -214,14 +265,14 @@
     } catch {}
   }
 
-  const handleSelectionChange = (selection: SysArticle[]) => {
+  const handleSelectionChange = (selection: SysArticleVo[]) => {
     single.value = selection.length !== 1
     if (selection.length === 1) {
       selectedRow.value = selection[0]
     }
   }
 
-  const rowClick = (row: SysArticle) => {
+  const rowClick = (row: SysArticleVo) => {
     currentRow.value = row
   }
 
@@ -230,7 +281,13 @@
     if (!valid) return
 
     try {
-      const data = { ...form }
+      const data: SysArticleReq = {
+        id: form.id,
+        title: form.title,
+        cover: form.cover,
+        tagIds: form.tagIds || [],
+        categoryIds: form.categoryIds || [],
+      }
       if (data.id) {
         await updateSysArticle(data)
         ElMessage.success('修改成功')
@@ -245,9 +302,11 @@
 
   // 重置表单函数
   const resetForm = () => {
-    Object.keys(form).forEach(key => {
-      (form as any)[key] = undefined
-    })
+    form.id = undefined
+    form.title = undefined
+    form.cover = undefined
+    form.tagIds = []
+    form.categoryIds = []
   }
 
   // 内容编辑相关
@@ -257,7 +316,7 @@
   const contentUploadRef = ref()
   const contentHistoryRef = ref()
 
-  const handleEditContent = async (row: SysArticle) => {
+  const handleEditContent = async (row: SysArticleVo) => {
     Object.keys(contentForm).forEach(key => {
       (contentForm as any)[key] = undefined
     })
@@ -273,18 +332,15 @@
     contentDialogVisible.value = true
   }
 
-  const handleViewDoc = (row: SysArticle) => {
-
-    console.log("查看文章内容", row.id)
-
+  const handleViewDoc = (row: SysArticleVo) => {
     router.push(`/blog/doc/${row.id}`)
   }
 
-  const handleUploadContent = (row: SysArticle) => {
+  const handleUploadContent = (row: SysArticleVo) => {
     contentUploadRef.value?.open(row.id)
   }
 
-  const handleViewHistory = (row: SysArticle) => {
+  const handleViewHistory = (row: SysArticleVo) => {
     contentHistoryRef.value?.open(row.id)
   }
 
@@ -301,8 +357,6 @@
       }
       contentDialogVisible.value = false
     } catch(error: any) {
-      // 拦截器已显示错误信息，这里只需处理业务逻辑
-      // 只在没有错误消息时显示通用提示
       if (!error?.message) {
         ElMessage.error('内容保存失败')
       }
@@ -314,6 +368,7 @@
 
   onMounted(() => {
     getList()
+    loadOptions()
   })
 </script>
 

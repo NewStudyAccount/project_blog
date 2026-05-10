@@ -6,14 +6,17 @@ import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysArticle;
 import com.example.domain.req.SysArticleQueryPageReq;
 import com.example.domain.req.SysArticleReq;
+import com.example.domain.vo.SysArticleVo;
+
+import java.util.List;
 
 public interface SysArticleService extends IService<SysArticle> {
 
-    TableDataInfo<SysArticle> querySysArticleListPage(SysArticleQueryPageReq pageReq);
+    TableDataInfo<SysArticleVo> querySysArticleListPage(SysArticleQueryPageReq pageReq);
 
-    SysArticle queryById(Long id);
+    SysArticleVo queryVoById(Long id);
 
-    int addSysArticle(SysArticle entity);
+    int addSysArticle(SysArticleReq req);
 
-    int updateSysArticleById(SysArticle entity);
+    int updateSysArticleById(SysArticleReq req);
 }
