@@ -1,11 +1,14 @@
 package com.example.domain.pojo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import com.example.domain.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 
 /**
  * 标签
@@ -13,9 +16,10 @@ import lombok.Data;
  */
 @TableName(value ="sys_tag")
 @Data
-public class SysTag implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class SysTag extends BaseEntity {
     /**
-     * 
+     *
      */
     @TableId
     private Long id;
@@ -26,9 +30,10 @@ public class SysTag implements Serializable {
     private String name;
 
     /**
-     * 
+     * 删除标志
      */
-    private String idDeleted;
+    @TableLogic
+    private String isDeleted;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

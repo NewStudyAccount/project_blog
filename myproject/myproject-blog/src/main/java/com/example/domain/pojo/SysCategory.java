@@ -1,14 +1,13 @@
 package com.example.domain.pojo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.NumberSerializer;
+import com.example.domain.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 
 /**
  * 文章分类
@@ -16,7 +15,8 @@ import lombok.Data;
  */
 @TableName(value ="sys_category")
 @Data
-public class SysCategory implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class SysCategory extends BaseEntity {
     /**
      * 分类id
      */

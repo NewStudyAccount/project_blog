@@ -67,11 +67,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
             throw new RuntimeException("配置名称已存在: " + sysOssConfig.getConfigName());
         }
         
-        // 设置创建时间和更新时间
-        LocalDateTime now = LocalDateTime.now();
-        sysOssConfig.setCreatedAt(now);
-        sysOssConfig.setUpdatedAt(now);
-        
+
         // 默认启用
         if (sysOssConfig.getIsActive() == null) {
             sysOssConfig.setIsActive(true);
@@ -100,9 +96,6 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
                 throw new RuntimeException("配置名称已存在: " + sysOssConfig.getConfigName());
             }
         }
-        
-        // 更新时间
-        sysOssConfig.setUpdatedAt(LocalDateTime.now());
         
         baseMapper.updateById(sysOssConfig);
         

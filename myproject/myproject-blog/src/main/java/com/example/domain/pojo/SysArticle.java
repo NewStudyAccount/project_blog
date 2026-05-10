@@ -4,7 +4,9 @@ package com.example.domain.pojo;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.domain.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
@@ -14,7 +16,8 @@ import java.io.Serializable;
  */
 @TableName(value ="sys_article")
 @Data
-public class SysArticle implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class SysArticle extends BaseEntity {
     /**
      * 文章id
      */

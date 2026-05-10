@@ -3,42 +3,45 @@ package com.example.oss.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.domain.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * 
+ *
  * @TableName sys_oss_file
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @TableName(value ="sys_oss_file")
 @AllArgsConstructor
 @NoArgsConstructor
-public class SysOssFile {
+public class SysOssFile extends BaseEntity {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
     private Long ossId;
 
     /**
-     * 
+     *
      */
     private String fileName;
 
     /**
-     * 
+     *
      */
     private String originalName;
 
     /**
-     * 
+     *
      */
     private String fileSuffix;
 
     /**
-     * 
+     *
      */
     private String fileUrl;
 

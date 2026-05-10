@@ -4,17 +4,17 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.example.domain.BaseEntity;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
 
 /**
  * OSS配置实体类
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @TableName("sys_oss_config")
-public class SysOssConfig {
+public class SysOssConfig extends BaseEntity {
 
     /**
      * 主键ID
@@ -75,18 +75,4 @@ public class SysOssConfig {
      */
     @TableField("is_active")
     private Boolean isActive;
-
-    /**
-     * 创建时间
-     */
-    @TableField("created_at")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
-
-    /**
-     * 更新时间
-     */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @TableField("updated_at")
-    private LocalDateTime updatedAt;
 }
