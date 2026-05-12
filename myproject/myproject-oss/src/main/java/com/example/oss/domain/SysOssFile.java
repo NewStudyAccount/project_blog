@@ -1,6 +1,7 @@
 package com.example.oss.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.domain.BaseEntity;
@@ -47,6 +48,9 @@ public class SysOssFile extends BaseEntity {
 
 
     private String contentType;
+
+    @TableField(exist = false)
+    private String fullUrl;
 
     public SysOssFile(String fileName, String originalName, String fileSuffix, String fileUrl, String contentType) {
         this.fileName = fileName;

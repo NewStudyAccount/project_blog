@@ -32,6 +32,13 @@ public interface OssConfigService extends IService<SysOssConfig> {
     List<SysOssConfig> listActive();
 
     /**
+     * 获取当前活跃的OSS配置（带缓存）
+     *
+     * @return 活跃配置，无活跃配置时返回null
+     */
+    SysOssConfig getActiveConfig();
+
+    /**
      * 创建配置
      *
      * @param sysOssConfig 配置信息

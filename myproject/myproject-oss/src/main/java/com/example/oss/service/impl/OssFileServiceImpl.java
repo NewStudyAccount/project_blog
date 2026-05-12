@@ -15,11 +15,9 @@ import com.example.utils.SnowflakeIdUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -40,35 +38,26 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
 
     @Override
     public String uploadFile(MultipartFile file) {
-        String url = "";
         try {
-
-            List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
-            if (CollectionUtils.isEmpty(sysOssConfigs)) {
-                throw new  RuntimeException("未找到有效的OSS配置");
+            SysOssConfig sysOssConfig = ossConfigService.getActiveConfig();
+            if (sysOssConfig == null) {
+                throw new RuntimeException("未找到有效的OSS配置");
             }
 
             String originalFilename = file.getOriginalFilename();
             String[] split = originalFilename.split("\\.");
-            String newFileName = UUID.randomUUID().toString() + "."+split[1];
+            String newFileName = UUID.randomUUID().toString() + "." + split[1];
 
-            SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
             String contentType = file.getContentType();
-            ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,file.getBytes());
+            ossClientFactory.uploadFile(sysOssConfig, newFileName, contentType, file.getBytes());
 
-            String endpoint = sysOssConfig.getEndpoint();
-            String bucketName = sysOssConfig.getBucketName();
-//            http://192.168.99.100:9000/my-bucket/62237aa2-b510-4acf-9c5e-32a94e953540.png
-            url = endpoint+"/"+bucketName+"/"+newFileName;
-            SysOssFile sysOssFile = new SysOssFile(newFileName,originalFilename,split[1],url,contentType);
-
+            SysOssFile sysOssFile = new SysOssFile(newFileName, originalFilename, split[1], newFileName, contentType);
             insertSysOssFile(sysOssFile);
 
+            return buildFullUrl(newFileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return url;
     }
 
     @Override
@@ -78,35 +67,26 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long uploadFile(Long ossId,String fileName,String contentType,byte[] data) {
-        String url = "";
-
-        List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
-        if (CollectionUtils.isEmpty(sysOssConfigs)) {
-            throw new  RuntimeException("未找到有效的OSS配置");
+    public Long uploadFile(Long ossId, String fileName, String contentType, byte[] data) {
+        SysOssConfig sysOssConfig = ossConfigService.getActiveConfig();
+        if (sysOssConfig == null) {
+            throw new RuntimeException("未找到有效的OSS配置");
         }
 
         String[] split = fileName.split("\\.");
-        String newFileName = UUID.randomUUID().toString() + "."+split[1];
-        if (ossId!= null) {
-            SysOssFile sysOssFile = this.baseMapper.selectById(ossId);
-            newFileName = sysOssFile.getFileName();
+        String newFileName = UUID.randomUUID().toString() + "." + split[1];
+        if (ossId != null) {
+            SysOssFile existingFile = this.baseMapper.selectById(ossId);
+            newFileName = existingFile.getFileName();
         }
 
+        ossClientFactory.uploadFile(sysOssConfig, newFileName, contentType, data);
 
-        SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
-        String endpoint = sysOssConfig.getEndpoint();
-        String bucketName = sysOssConfig.getBucketName();
-        url = endpoint+"/"+bucketName+"/"+newFileName;
+        SysOssFile sysOssFile = new SysOssFile(newFileName, fileName, split[1], newFileName, contentType);
 
-        //执行上传文件
-        ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,data);
-
-        SysOssFile sysOssFile = new SysOssFile(newFileName,fileName,split[1],url,contentType);
-
-        if (ossId == null){
+        if (ossId == null) {
             insertSysOssFile(sysOssFile);
-        }else {
+        } else {
             sysOssFile.setOssId(ossId);
             this.baseMapper.updateById(sysOssFile);
         }
@@ -122,26 +102,11 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
     @Override
     public byte[] downloadFileContent(String fileUrl) {
         try {
-            List<SysOssConfig> sysOssConfigs = ossConfigService.listActive();
-            if (CollectionUtils.isEmpty(sysOssConfigs)) {
+            SysOssConfig sysOssConfig = ossConfigService.getActiveConfig();
+            if (sysOssConfig == null) {
                 throw new RuntimeException("未找到有效的OSS配置");
             }
-
-            SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
-            if (sysOssConfig == null) {
-                sysOssConfig = sysOssConfigs.get(0);
-            }
-
-            String endpoint = sysOssConfig.getEndpoint();
-            String bucketName = sysOssConfig.getBucketName();
-
-            String prefix = endpoint + "/" + bucketName + "/";
-            if (fileUrl.startsWith(prefix)) {
-                String objectName = fileUrl.substring(prefix.length());
-                return ossClientFactory.downloadFile(sysOssConfig, objectName);
-            } else {
-                throw new RuntimeException("无效的文件URL: " + fileUrl);
-            }
+            return ossClientFactory.downloadFile(sysOssConfig, fileUrl);
         } catch (Exception e) {
             throw new RuntimeException("下载文件内容失败: " + e.getMessage(), e);
         }
@@ -151,13 +116,17 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
     public TableDataInfo<SysOssFile> querySysOssFileListPage(SysOssFileQueryPageReq sysOssFileQueryPageReq) {
         PageQuery pageQuery = sysOssFileQueryPageReq.getPageQuery();
         Page<SysOssFile> sysOssFilePage = this.baseMapper.selectPage(pageQuery.build(), null);
+        sysOssFilePage.getRecords().forEach(this::fillFullUrl);
         return TableDataInfo.build(sysOssFilePage);
-
     }
 
     @Override
     public SysOssFile queryById(Long id) {
-        return this.baseMapper.selectById(id);
+        SysOssFile entity = this.baseMapper.selectById(id);
+        if (entity != null) {
+            fillFullUrl(entity);
+        }
+        return entity;
     }
 
     @Override
@@ -165,6 +134,18 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
         return this.baseMapper.deleteById(id);
     }
 
+
+    private String buildFullUrl(String fileName) {
+        SysOssConfig config = ossConfigService.getActiveConfig();
+        if (config == null) {
+            return fileName;
+        }
+        return config.getEndpoint() + "/" + config.getBucketName() + "/" + fileName;
+    }
+
+    private void fillFullUrl(SysOssFile sysOssFile) {
+        sysOssFile.setFullUrl(buildFullUrl(sysOssFile.getFileUrl()));
+    }
 
     public void insertSysOssFile(SysOssFile sysOssFile) {
         long ossNextId = SnowflakeIdUtil.ossNextId();
