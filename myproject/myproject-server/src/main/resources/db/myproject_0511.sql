@@ -239,28 +239,28 @@ CREATE TABLE `sys_oss_file`  (
 -- ----------------------------
 -- Records of sys_oss_file
 -- ----------------------------
-INSERT INTO `sys_oss_file` VALUES (1, '0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg', 'QQ图片20231105182412.jpg', 'jpg', '0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg', '', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (2, '4dcac91a-d2df-4e5b-b926-16998b2d5ed1.jpg', 'QQ图片20231105182412.jpg', 'jpg', '4dcac91a-d2df-4e5b-b926-16998b2d5ed1.jpg', '', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (3, 'c76a6bc5-8225-414d-b4d9-a7340034775b.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'c76a6bc5-8225-414d-b4d9-a7340034775b.jpg', '', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (4, '16288477-fc46-41f7-a5e4-a833becb7f2c.png', 'QQ截图20240407211705.png', 'png', '16288477-fc46-41f7-a5e4-a833becb7f2c.png', '', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (5, 'f0a5f327-a6c5-4e65-bd4e-eb68325a6d9f.png', 'QQ截图20240407211705.png', 'png', 'f0a5f327-a6c5-4e65-bd4e-eb68325a6d9f.png', '', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (6, 'af2fb449-394f-4624-9104-5495fd97333e.png', 'QQ截图20240407211705.png', 'png', 'af2fb449-394f-4624-9104-5495fd97333e.png', '', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (7, '80b56b98-6297-454d-a93c-671ebe376ad1.png', 'QQ截图20240407211705.png', 'png', '80b56b98-6297-454d-a93c-671ebe376ad1.png', 'image/png', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (307551693804142592, 'e229797a-f337-477d-9802-ffb5bc47edb2.md', 'ssss.md', 'md', 'e229797a-f337-477d-9802-ffb5bc47edb2.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (307552411755741184, '9b598633-d7e5-44fb-a65f-20647aa39358.md', 'ssss.md', 'md', '9b598633-d7e5-44fb-a65f-20647aa39358.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (307552632485183488, 'c01d98f8-870c-425a-8f3e-77315c032df6.md', 'ssss.md', 'md', 'c01d98f8-870c-425a-8f3e-77315c032df6.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (310793926762299392, 'cb2e8713-0610-4d8c-a7e4-3027c9171a29.md', '我的第一篇文章.md', 'md', 'cb2e8713-0610-4d8c-a7e4-3027c9171a29.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (310798154947887104, '4a09e20e-e8c5-4484-8925-c072eb90360a.md', '我的第一篇文章.md', 'md', '4a09e20e-e8c5-4484-8925-c072eb90360a.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (310798596343857152, 'b1d89832-9d0f-4b7c-a08c-c9c3871f0cb0.md', '我的第一篇文章.md', 'md', 'b1d89832-9d0f-4b7c-a08c-c9c3871f0cb0.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (310800365245431808, '1c16c242-b7ad-4ce1-86d3-2cf9bf168597.md', '我的第一篇文章.md', 'md', '1c16c242-b7ad-4ce1-86d3-2cf9bf168597.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (311553816514527232, '5cf1741e-948c-4938-bbb7-a52bcf16637e.md', '我的第一篇文章.md', 'md', '5cf1741e-948c-4938-bbb7-a52bcf16637e.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (311555058942869504, '07db0889-2b51-488a-8738-80fc4489a369.md', '我的第一篇文章.md', 'md', '07db0889-2b51-488a-8738-80fc4489a369.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (311555568341090304, '67e436ef-2377-498b-bfa6-bd38b3b6c34a.md', '我的第一篇文章.md', 'md', '67e436ef-2377-498b-bfa6-bd38b3b6c34a.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (311556756302200832, 'a50612d2-e907-4af2-b897-5595733a8f52.md', '我的第一篇文章.md', 'md', 'a50612d2-e907-4af2-b897-5595733a8f52.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (311558040455479296, '90b4cdbe-9b59-40a7-b177-57e65f5ebc26.md', '我的第一篇文章.md', 'md', '90b4cdbe-9b59-40a7-b177-57e65f5ebc26.md', 'text/markdown', NULL, NULL, NULL, NULL);
-INSERT INTO `sys_oss_file` VALUES (311558329426247680, '11c91e67-6014-467d-bff4-ca14e3e8e42a.md', '而是对于个人.md', 'md', '11c91e67-6014-467d-bff4-ca14e3e8e42a.md', 'text/markdown', NULL, NULL, 1, '2026-05-10 23:53:05');
-INSERT INTO `sys_oss_file` VALUES (311889983361515520, '856b1527-82cf-4c9e-902d-7246986855b7.png', '1fb8f3d4-1f1e-4240-8fe3-f24aff3492e8.png', 'png', '856b1527-82cf-4c9e-902d-7246986855b7.png', 'image/png', 1, '2026-05-10 23:39:27', 1, '2026-05-10 23:39:27');
-INSERT INTO `sys_oss_file` VALUES (311897047655776256, 'bc209ee4-7f36-4679-a60d-1f66878f7171.png', '3ec2fec0-ae53-4d59-a338-7a11678b070f.png', 'png', 'bc209ee4-7f36-4679-a60d-1f66878f7171.png', 'image/png', 1, '2026-05-11 00:07:31', 1, '2026-05-11 00:07:31');
+INSERT INTO `sys_oss_file` VALUES (1, '0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'https://qjj-learn.oss-cn-shanghai.aliyuncs.com/test2/0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (2, '4dcac91a-d2df-4e5b-b926-16998b2d5ed1.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'https://qjj-learn.oss-cn-shanghai.aliyuncs.com/test2/4dcac91a-d2df-4e5b-b926-16998b2d5ed1.jpg', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (3, 'c76a6bc5-8225-414d-b4d9-a7340034775b.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'https://qjj-learn.oss-cn-shanghai.aliyuncs.com/test3/c76a6bc5-8225-414d-b4d9-a7340034775b.jpg', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (4, '16288477-fc46-41f7-a5e4-a833becb7f2c.png', 'QQ截图20240407211705.png', 'png', 'http://192.168.99.100:9000/my-bucket/16288477-fc46-41f7-a5e4-a833becb7f2c.png', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (5, 'f0a5f327-a6c5-4e65-bd4e-eb68325a6d9f.png', 'QQ截图20240407211705.png', 'png', 'http://192.168.99.100:9000/my-bucket/f0a5f327-a6c5-4e65-bd4e-eb68325a6d9f.png', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (6, 'af2fb449-394f-4624-9104-5495fd97333e.png', 'QQ截图20240407211705.png', 'png', 'http://192.168.99.100:9000/my-bucket/af2fb449-394f-4624-9104-5495fd97333e.png', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (7, '80b56b98-6297-454d-a93c-671ebe376ad1.png', 'QQ截图20240407211705.png', 'png', 'http://192.168.99.100:9000/my-bucket/80b56b98-6297-454d-a93c-671ebe376ad1.png', 'image/png', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (307551693804142592, 'e229797a-f337-477d-9802-ffb5bc47edb2.md', 'ssss.md', 'md', 'http://192.168.99.100:9000/my-bucket/e229797a-f337-477d-9802-ffb5bc47edb2.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (307552411755741184, '9b598633-d7e5-44fb-a65f-20647aa39358.md', 'ssss.md', 'md', 'http://192.168.99.100:9000/my-bucket/9b598633-d7e5-44fb-a65f-20647aa39358.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (307552632485183488, 'c01d98f8-870c-425a-8f3e-77315c032df6.md', 'ssss.md', 'md', 'http://192.168.99.100:9000/my-bucket/c01d98f8-870c-425a-8f3e-77315c032df6.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (310793926762299392, 'cb2e8713-0610-4d8c-a7e4-3027c9171a29.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/cb2e8713-0610-4d8c-a7e4-3027c9171a29.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (310798154947887104, '4a09e20e-e8c5-4484-8925-c072eb90360a.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/4a09e20e-e8c5-4484-8925-c072eb90360a.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (310798596343857152, 'b1d89832-9d0f-4b7c-a08c-c9c3871f0cb0.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/b1d89832-9d0f-4b7c-a08c-c9c3871f0cb0.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (310800365245431808, '1c16c242-b7ad-4ce1-86d3-2cf9bf168597.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/1c16c242-b7ad-4ce1-86d3-2cf9bf168597.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311553816514527232, '5cf1741e-948c-4938-bbb7-a52bcf16637e.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/5cf1741e-948c-4938-bbb7-a52bcf16637e.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311555058942869504, '07db0889-2b51-488a-8738-80fc4489a369.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/07db0889-2b51-488a-8738-80fc4489a369.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311555568341090304, '67e436ef-2377-498b-bfa6-bd38b3b6c34a.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/67e436ef-2377-498b-bfa6-bd38b3b6c34a.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311556756302200832, 'a50612d2-e907-4af2-b897-5595733a8f52.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/a50612d2-e907-4af2-b897-5595733a8f52.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311558040455479296, '90b4cdbe-9b59-40a7-b177-57e65f5ebc26.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/90b4cdbe-9b59-40a7-b177-57e65f5ebc26.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311558329426247680, '11c91e67-6014-467d-bff4-ca14e3e8e42a.md', '而是对于个人.md', 'md', 'http://192.168.99.100:9000/my-bucket/11c91e67-6014-467d-bff4-ca14e3e8e42a.md', 'text/markdown', NULL, NULL, 1, '2026-05-10 23:53:05');
+INSERT INTO `sys_oss_file` VALUES (311889983361515520, '856b1527-82cf-4c9e-902d-7246986855b7.png', '1fb8f3d4-1f1e-4240-8fe3-f24aff3492e8.png', 'png', 'http://192.168.99.100:9000/my-bucket/856b1527-82cf-4c9e-902d-7246986855b7.png', 'image/png', 1, '2026-05-10 23:39:27', 1, '2026-05-10 23:39:27');
+INSERT INTO `sys_oss_file` VALUES (311897047655776256, 'bc209ee4-7f36-4679-a60d-1f66878f7171.png', '3ec2fec0-ae53-4d59-a338-7a11678b070f.png', 'png', 'http://192.168.99.100:9000/my-bucket/bc209ee4-7f36-4679-a60d-1f66878f7171.png', 'image/png', 1, '2026-05-11 00:07:31', 1, '2026-05-11 00:07:31');
 
 -- ----------------------------
 -- Table structure for sys_role

@@ -14,8 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * OSS配置服务实现类
@@ -27,19 +27,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
     @Autowired
     private OssClientFactory ossClientFactory;
 
-    private final ConcurrentHashMap<String, SysOssConfig> activeConfigCache = new ConcurrentHashMap<>();
 
-    @Override
-    public SysOssConfig getActiveConfig() {
-        return activeConfigCache.computeIfAbsent("active", key -> {
-            List<SysOssConfig> configs = listActive();
-            return configs.isEmpty() ? null : configs.getFirst();
-        });
-    }
-
-    private void clearActiveConfigCache() {
-        activeConfigCache.remove("active");
-    }
 
     @Override
     public void initConfig() {
@@ -60,8 +48,14 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
     @Override
     public List<SysOssConfig> listActive() {
 
+        // 缓存没有，查数据库
         List<SysOssConfig> configs = baseMapper.selectList(new LambdaQueryWrapper<SysOssConfig>()
                 .eq(SysOssConfig::getIsActive, true));
+        if (configs.size()>1){
+            throw new RuntimeException("存在多个启用的配置");
+        }
+
+        
         return configs;
     }
 
@@ -80,8 +74,9 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
         }
         
         baseMapper.insert(sysOssConfig);
-        clearActiveConfigCache();
+        
 
+        
         log.info("创建OSS配置成功: configName={}", sysOssConfig.getConfigName());
         return sysOssConfig;
     }
@@ -103,8 +98,9 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
         }
         
         baseMapper.updateById(sysOssConfig);
-        clearActiveConfigCache();
+        
 
+        
         log.info("更新OSS配置成功: id={}", sysOssConfig.getId());
         return getById(sysOssConfig.getId());
     }
@@ -118,8 +114,8 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
         }
         
         boolean result = baseMapper.deleteById(id) > 0;
-        clearActiveConfigCache();
 
+        
         return result;
     }
 
