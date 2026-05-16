@@ -2,7 +2,7 @@ import router, { notFoundRoute } from '@/router'
 import { useUserStore } from '@/stores/user'
 import { usePermissionStore } from '@/stores/permission'
 
-const whiteList = ['/login']
+const whiteList = ['/login', '/blog/home', '/blog/detail']
 
 router.beforeEach(async (to, _from) => {
   const token = localStorage.getItem('token')
@@ -34,7 +34,7 @@ router.beforeEach(async (to, _from) => {
       return { path: '/login', query: { redirect: to.fullPath } }
     }
   } else {
-    if (whiteList.includes(to.path)) {
+    if (whiteList.some(path => to.path.startsWith(path))) {
       return true
     }
     return { path: '/login', query: { redirect: to.fullPath } }

@@ -70,6 +70,12 @@ const handleLogoClick = () => {
         active-text-color="#409eff"
         @select="handleSelect"
     >
+      <!-- 静态首页菜单 -->
+      <el-menu-item index="/dashboard">
+        <el-icon><HomeFilled /></el-icon>
+        <template #title>首页</template>
+      </el-menu-item>
+
       <template v-for="item in dynamicMenus" :key="item.path">
         <!-- 有子菜单的情况 -->
         <el-sub-menu v-if="item.children && item.children.length > 0" :index="item.path">

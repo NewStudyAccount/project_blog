@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessageBox, ElMessage } from 'element-plus'
-import { Fold, Expand, User, SwitchButton } from '@element-plus/icons-vue'
+import {Fold, Expand, User, SwitchButton, Link, Files, Collection} from '@element-plus/icons-vue'
 
 defineProps<{
   isCollapse: boolean
@@ -26,6 +26,10 @@ const handleLogout = () => {
     router.push('/login')
   }).catch(() => {})
 }
+
+const handleModuleSwitch = (path: string) => {
+  router.push(path)
+}
 </script>
 
 <template>
@@ -39,6 +43,21 @@ const handleLogout = () => {
     </div>
 
     <div class="header-right">
+      <el-dropdown trigger="click" @command="handleModuleSwitch">
+        <span class="module-info">
+          <el-icon><Link /></el-icon>
+          <span class="module-name">跳转系统</span>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="/blog/home">
+              <el-icon><Collection /></el-icon>
+              博客前台
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+
       <el-dropdown trigger="click">
         <span class="user-info">
           <el-icon><User /></el-icon>
@@ -87,6 +106,7 @@ const handleLogout = () => {
   align-items: center;
 }
 
+.module-info,
 .user-info {
   display: flex;
   align-items: center;
@@ -95,10 +115,12 @@ const handleLogout = () => {
   border-radius: 4px;
 }
 
+.module-info:hover,
 .user-info:hover {
   background-color: #f5f7fa;
 }
 
+.module-name,
 .username {
   margin-left: 8px;
   font-size: 14px;

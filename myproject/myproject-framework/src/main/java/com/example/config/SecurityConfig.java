@@ -96,7 +96,14 @@ public class SecurityConfig {
             "/project/admin/register",
 
             // 网站图标
-            "/favicon.ico"
+            "/favicon.ico",
+
+            // 博客公开接口
+            "/project/sysArticle/public/**",
+            "/project/sysCategory/public/**",
+            "/project/sysTag/public/**",
+            "/project/sysConfig/public/**",
+            "/project/sysArticleContent/public/**"
 
     };
 

@@ -50,6 +50,13 @@ public class SysArticleContentController {
         return Response.success(entity);
     }
 
+    @Operation(summary = "公开获取HTML格式内容（无需登录）")
+    @GetMapping("/public/queryHtmlByArticleId/{id}")
+    public Response<SysArticleContentHtmlVo> publicQueryHtmlByArticleId(@PathVariable("id") Long id) {
+        SysArticleContentHtmlVo entity = sysArticleContentService.queryHtmlByArticleId(id);
+        return Response.success(entity);
+    }
+
     @Operation(summary = "新增")
     @PostMapping("add")
     public Response<?> addSysArticleContent(@RequestBody SysArticleContentReq sysArticleContentReq) {

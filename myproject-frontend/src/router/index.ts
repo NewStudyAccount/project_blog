@@ -33,6 +33,24 @@ const constantRoutes: RouteRecordRaw[] = [
     component: () => import('@/views/blog/doc/index.vue'),
     meta: { requiresAuth: true, title: '文档展示' },
   },
+  {
+    path: '/blog',
+    component: () => import('@/components/layout/BlogLayout.vue'),
+    children: [
+      {
+        path: 'home',
+        name: 'blog-home',
+        component: () => import('@/views/blog/home/index.vue'),
+        meta: { requiresAuth: false, title: '博客首页' },
+      },
+      {
+        path: 'detail/:id',
+        name: 'blog-detail',
+        component: () => import('@/views/blog/detail/index.vue'),
+        meta: { requiresAuth: false, title: '文章详情' },
+      },
+    ],
+  },
 ]
 
 const notFoundRoute: RouteRecordRaw = {

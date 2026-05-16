@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysCategory;
 import com.example.domain.req.SysCategoryQueryPageReq;
+import com.example.domain.vo.PublicCategoryVo;
+
+import java.util.List;
 
 public interface SysCategoryService extends IService<SysCategory> {
 
@@ -14,4 +17,9 @@ public interface SysCategoryService extends IService<SysCategory> {
     int addSysCategory(SysCategory entity);
 
     int updateSysCategoryById(SysCategory entity);
+
+    /**
+     * 查询公开分类列表
+     */
+    List<PublicCategoryVo> queryPublicCategoryList();
 }

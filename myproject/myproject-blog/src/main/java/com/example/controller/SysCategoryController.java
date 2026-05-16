@@ -4,11 +4,14 @@ import com.example.domain.Response;
 import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysCategory;
 import com.example.domain.req.SysCategoryQueryPageReq;
+import com.example.domain.vo.PublicCategoryVo;
 import com.example.service.SysCategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "文章分类")
 @RestController
@@ -51,5 +54,12 @@ public class SysCategoryController {
     public Response<?> delete(@PathVariable("id") Long id) {
         boolean result = sysCategoryService.removeById(id);
         return Response.success(result);
+    }
+
+    @Operation(summary = "公开分类列表（无需登录）")
+    @GetMapping("/public/list")
+    public Response<List<PublicCategoryVo>> publicList() {
+        List<PublicCategoryVo> list = sysCategoryService.queryPublicCategoryList();
+        return Response.success(list);
     }
 }

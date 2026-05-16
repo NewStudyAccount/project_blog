@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ArticleNavBar: typeof import('./src/components/ArticleNavBar/index.vue')['default']
+    BlogLayout: typeof import('./src/components/layout/BlogLayout.vue')['default']
     ContentHistory: typeof import('./src/components/ContentHistory/index.vue')['default']
     ContentUpload: typeof import('./src/components/ContentUpload/index.vue')['default']
     ElAlert: typeof import('element-plus/es')['ElAlert']
@@ -35,6 +36,7 @@ declare module 'vue' {
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElHeader: typeof import('element-plus/es')['ElHeader']
     ElIcon: typeof import('element-plus/es')['ElIcon']
+    ElIconCollection: typeof import('@element-plus/icons-vue')['Collection']
     ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElMain: typeof import('element-plus/es')['ElMain']

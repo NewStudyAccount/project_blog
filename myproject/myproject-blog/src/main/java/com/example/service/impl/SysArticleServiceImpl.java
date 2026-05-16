@@ -7,13 +7,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.*;
+import com.example.domain.req.PublicArticleListReq;
 import com.example.domain.req.SysArticleQueryPageReq;
 import com.example.domain.req.SysArticleReq;
+import com.example.domain.vo.PublicArticleVo;
 import com.example.domain.vo.SysArticleVo;
 import com.example.mapper.*;
 import com.example.service.SysArticleService;
 import com.example.utils.SnowflakeIdUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,5 +202,154 @@ public class SysArticleServiceImpl extends ServiceImpl<SysArticleMapper, SysArti
     private SysArticleVo buildArticleVo(SysArticle article) {
         List<SysArticleVo> vos = buildArticleVoList(Collections.singletonList(article));
         return vos.isEmpty() ? null : vos.get(0);
+    }
+
+    @Override
+    public TableDataInfo<PublicArticleVo> queryPublicArticleList(PublicArticleListReq req) {
+        Long categoryId = req.getCategoryId();
+        Long tagId = req.getTagId();
+
+        List<Long> articleIds = null;
+
+        // 按分类筛选
+        if (categoryId != null) {
+            List<SysArticleCategoryRel> catRels = articleCategoryRelMapper.selectList(
+                    new LambdaQueryWrapper<SysArticleCategoryRel>()
+                            .eq(SysArticleCategoryRel::getCategoryId, categoryId)
+            );
+            articleIds = catRels.stream()
+                    .map(SysArticleCategoryRel::getArticleId)
+                    .collect(Collectors.toList());
+            if (articleIds.isEmpty()) {
+                TableDataInfo<PublicArticleVo> result = new TableDataInfo<>();
+                result.setRows(Collections.emptyList());
+                result.setTotal(0);
+                return result;
+            }
+        }
+
+        // 按标签筛选
+        if (tagId != null) {
+            List<SysArticleTagRel> tagRels = articleTagRelMapper.selectList(
+                    new LambdaQueryWrapper<SysArticleTagRel>()
+                            .eq(SysArticleTagRel::getTagId, tagId)
+            );
+            List<Long> tagArticleIds = tagRels.stream()
+                    .map(SysArticleTagRel::getArticleId)
+                    .collect(Collectors.toList());
+
+            if (tagArticleIds.isEmpty()) {
+                TableDataInfo<PublicArticleVo> result = new TableDataInfo<>();
+                result.setRows(Collections.emptyList());
+                result.setTotal(0);
+                return result;
+            }
+
+            // 取交集
+            if (articleIds != null) {
+                articleIds.retainAll(tagArticleIds);
+                if (articleIds.isEmpty()) {
+                    TableDataInfo<PublicArticleVo> result = new TableDataInfo<>();
+                    result.setRows(Collections.emptyList());
+                    result.setTotal(0);
+                    return result;
+                }
+            } else {
+                articleIds = tagArticleIds;
+            }
+        }
+
+        // 构建查询条件
+        LambdaQueryWrapper<SysArticle> wrapper = new LambdaQueryWrapper<>();
+        wrapper.select(SysArticle::getId, SysArticle::getTitle, SysArticle::getCover);
+        wrapper.orderByDesc(SysArticle::getCreateTime);
+
+        if (articleIds != null) {
+            wrapper.in(SysArticle::getId, articleIds);
+        }
+
+        Page<SysArticle> page = baseMapper.selectPage(req.build(), wrapper);
+
+        // 转换为 PublicArticleVo（包含分类和标签）
+        List<PublicArticleVo> voList = buildPublicArticleVoList(page.getRecords());
+
+        TableDataInfo<PublicArticleVo> result = new TableDataInfo<>();
+        result.setRows(voList);
+        result.setTotal((int) page.getTotal());
+        return result;
+    }
+
+    private List<PublicArticleVo> buildPublicArticleVoList(List<SysArticle> articles) {
+        if (CollectionUtils.isEmpty(articles)) {
+            return Collections.emptyList();
+        }
+
+        List<Long> articleIds = articles.stream()
+                .map(SysArticle::getId)
+                .collect(Collectors.toList());
+
+        // 批量查询关系
+        List<SysArticleTagRel> tagRels = articleTagRelMapper.selectList(
+                new LambdaQueryWrapper<SysArticleTagRel>()
+                        .in(SysArticleTagRel::getArticleId, articleIds)
+        );
+        List<SysArticleCategoryRel> catRels = articleCategoryRelMapper.selectList(
+                new LambdaQueryWrapper<SysArticleCategoryRel>()
+                        .in(SysArticleCategoryRel::getArticleId, articleIds)
+        );
+
+        // 收集所有 tagId 和 categoryId
+        Set<Long> tagIds = tagRels.stream()
+                .map(SysArticleTagRel::getTagId)
+                .collect(Collectors.toSet());
+        Set<Long> catIds = catRels.stream()
+                .map(SysArticleCategoryRel::getCategoryId)
+                .collect(Collectors.toSet());
+
+        // 批量查询 tag 和 category 名称
+        Map<Long, String> tagNameMap = CollectionUtils.isEmpty(tagIds) ? Collections.emptyMap() :
+                tagMapper.selectBatchIds(tagIds).stream()
+                        .collect(Collectors.toMap(SysTag::getId, SysTag::getName));
+        Map<Long, String> catNameMap = CollectionUtils.isEmpty(catIds) ? Collections.emptyMap() :
+                categoryMapper.selectBatchIds(catIds).stream()
+                        .collect(Collectors.toMap(SysCategory::getId, SysCategory::getName));
+
+        // 按 articleId 分组
+        Map<Long, List<SysArticleTagRel>> tagRelMap = tagRels.stream()
+                .collect(Collectors.groupingBy(SysArticleTagRel::getArticleId));
+        Map<Long, List<SysArticleCategoryRel>> catRelMap = catRels.stream()
+                .collect(Collectors.groupingBy(SysArticleCategoryRel::getArticleId));
+
+        // 构建 VO
+        return articles.stream().map(article -> {
+            PublicArticleVo vo = new PublicArticleVo();
+            vo.setId(article.getId());
+            vo.setTitle(article.getTitle());
+            vo.setCover(article.getCover());
+
+            // 设置标签
+            List<PublicArticleVo.TagItem> tags = tagRelMap
+                    .getOrDefault(article.getId(), Collections.emptyList())
+                    .stream().map(rel -> {
+                        PublicArticleVo.TagItem item = new PublicArticleVo.TagItem();
+                        item.setId(rel.getTagId());
+                        item.setName(tagNameMap.get(rel.getTagId()));
+                        return item;
+                    }).collect(Collectors.toList());
+            vo.setTags(tags);
+
+            // 设置分类
+            List<PublicArticleVo.CategoryItem> categories = catRelMap
+                    .getOrDefault(article.getId(), Collections.emptyList())
+                    .stream().map(rel -> {
+                        PublicArticleVo.CategoryItem item = new PublicArticleVo.CategoryItem();
+                        item.setId(rel.getCategoryId());
+                        item.setName(catNameMap.get(rel.getCategoryId()));
+                        return item;
+                    }).collect(Collectors.toList());
+            vo.setCategories(categories);
+
+            return vo;
+        }).collect(Collectors.toList());
     }
 }

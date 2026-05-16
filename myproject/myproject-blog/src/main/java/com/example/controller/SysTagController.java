@@ -4,11 +4,14 @@ import com.example.domain.Response;
 import com.example.domain.TableDataInfo;
 import com.example.domain.pojo.SysTag;
 import com.example.domain.req.SysTagQueryPageReq;
+import com.example.domain.vo.PublicTagVo;
 import com.example.service.SysTagService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "标签")
 @RestController
@@ -51,5 +54,12 @@ public class SysTagController {
     public Response<?> delete(@PathVariable("id") Long id) {
         boolean result = sysTagService.removeById(id);
         return Response.success(result);
+    }
+
+    @Operation(summary = "公开标签列表（无需登录）")
+    @GetMapping("/public/list")
+    public Response<List<PublicTagVo>> publicList() {
+        List<PublicTagVo> list = sysTagService.queryPublicTagList();
+        return Response.success(list);
     }
 }

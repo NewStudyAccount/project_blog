@@ -2,8 +2,10 @@ package com.example.controller;
 
 import com.example.domain.Response;
 import com.example.domain.TableDataInfo;
+import com.example.domain.req.PublicArticleListReq;
 import com.example.domain.req.SysArticleQueryPageReq;
 import com.example.domain.req.SysArticleReq;
+import com.example.domain.vo.PublicArticleVo;
 import com.example.domain.vo.SysArticleVo;
 import com.example.service.SysArticleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,5 +56,19 @@ public class SysArticleController {
     public Response<?> delete(@PathVariable("id") Long id) {
         boolean result = sysArticleService.removeById(id);
         return Response.success(result);
+    }
+
+    @Operation(summary = "公开文章列表（无需登录）")
+    @PostMapping("/public/list")
+    public Response<TableDataInfo<PublicArticleVo>> publicList(@RequestBody PublicArticleListReq req) {
+        TableDataInfo<PublicArticleVo> tableDataInfo = sysArticleService.queryPublicArticleList(req);
+        return Response.success(tableDataInfo);
+    }
+
+    @Operation(summary = "公开根据ID查询文章详情（无需登录）")
+    @GetMapping("/public/{id}")
+    public Response<SysArticleVo> publicQueryById(@PathVariable("id") Long id) {
+        SysArticleVo vo = sysArticleService.queryVoById(id);
+        return Response.success(vo);
     }
 }
