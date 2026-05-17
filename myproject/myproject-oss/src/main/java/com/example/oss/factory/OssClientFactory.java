@@ -41,4 +41,11 @@ public interface OssClientFactory {
      * @return 文件数据
      */
     byte[] downloadFile(SysOssConfig sysOssConfig, String objectName);
+
+    /**
+     * 清除指定配置名称的客户端缓存
+     *
+     * @param configName 配置名称
+     */
+    void evictClient(String configName);
 }

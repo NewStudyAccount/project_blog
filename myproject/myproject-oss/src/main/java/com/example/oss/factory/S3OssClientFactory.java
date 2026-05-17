@@ -163,6 +163,7 @@ public class S3OssClientFactory implements OssClientFactory {
         }
     }
 
+    @Override
     public void evictClient(String configName) {
         clientCache.invalidate(configName);
         log.info("S3客户端缓存已失效: configName={}", configName);

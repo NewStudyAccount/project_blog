@@ -52,7 +52,7 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
             String[] split = originalFilename.split("\\.");
             String newFileName = UUID.randomUUID().toString() + "."+split[1];
 
-            SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
+            SysOssConfig sysOssConfig = sysOssConfigs.getFirst();
             String contentType = file.getContentType();
             ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,file.getBytes());
 
@@ -94,7 +94,7 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
         }
 
 
-        SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
+        SysOssConfig sysOssConfig = sysOssConfigs.getFirst();
         String endpoint = sysOssConfig.getEndpoint();
         String bucketName = sysOssConfig.getBucketName();
         url = endpoint+"/"+bucketName+"/"+newFileName;
@@ -127,7 +127,7 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
                 throw new RuntimeException("未找到有效的OSS配置");
             }
 
-            SysOssConfig sysOssConfig = ossConfigService.getByConfigName("minio-local");
+            SysOssConfig sysOssConfig = sysOssConfigs.getFirst();
             if (sysOssConfig == null) {
                 sysOssConfig = sysOssConfigs.get(0);
             }

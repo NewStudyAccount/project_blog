@@ -11,17 +11,11 @@
  Target Server Version : 80042 (8.0.42)
  File Encoding         : 65001
 
- Date: 29/03/2026 22:39:34
+ Date: 18/05/2026 01:17:34
 */
-
-
--- 创建数据库
-CREATE DATABASE IF NOT EXISTS myproject DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
-
-use  myproject;
 
 -- ----------------------------
 -- Table structure for sys_article
@@ -33,60 +27,107 @@ CREATE TABLE `sys_article`  (
   `cover` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT NULL COMMENT '预览图',
   `is_deleted` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT NULL COMMENT '删除标志',
   `read_num` int NULL DEFAULT 0 COMMENT '阅读次数',
+  `create_by` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '文章表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 2049152412669284355 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '文章表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_article
 -- ----------------------------
+INSERT INTO `sys_article` VALUES (311558139885780992, '而是对于个人', 'http://192.168.99.100:9000/my-bucket/856b1527-82cf-4c9e-902d-7246986855b7.png', NULL, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_article` VALUES (311897078240772096, '方法是', 'http://192.168.99.100:9000/my-bucket/bc209ee4-7f36-4679-a60d-1f66878f7171.png', NULL, 0, 1, '2026-05-11 00:07:38', 1, '2026-05-11 00:07:38');
+INSERT INTO `sys_article` VALUES (2049152412669284354, '我的第一篇文章', 'http://192.168.99.100:9000/my-bucket/d02ba8bc-9ab2-4898-a469-074228ed8302.jpg', NULL, 0, NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_article_category_rel
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_article_category_rel`;
 CREATE TABLE `sys_article_category_rel`  (
-  `id` bigint NOT NULL COMMENT 'id',
   `category_id` bigint NOT NULL COMMENT '分类id',
   `article_id` bigint NOT NULL COMMENT '文章id',
-  PRIMARY KEY (`article_id`, `category_id`) USING BTREE,
-  UNIQUE INDEX `sys_article_category_rel_pk`(`id` ASC) USING BTREE
+  PRIMARY KEY (`article_id`, `category_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_article_category_rel
 -- ----------------------------
+INSERT INTO `sys_article_category_rel` VALUES (307182234019168256, 311558139885780992);
+INSERT INTO `sys_article_category_rel` VALUES (311779030943006720, 311558139885780992);
+INSERT INTO `sys_article_category_rel` VALUES (307182234019168256, 311897078240772096);
+INSERT INTO `sys_article_category_rel` VALUES (311780183873290240, 311897078240772096);
+INSERT INTO `sys_article_category_rel` VALUES (311779030943006720, 2049152412669284354);
 
 -- ----------------------------
 -- Table structure for sys_article_content
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_article_content`;
 CREATE TABLE `sys_article_content`  (
-  `id` bigint NOT NULL COMMENT '文章内容id',
   `article_id` bigint NOT NULL COMMENT '文章id',
-  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL COMMENT '文章内容',
-  PRIMARY KEY (`article_id`) USING BTREE,
-  UNIQUE INDEX `sys_article_content_pk`(`id` ASC) USING BTREE
+  `oss_id` bigint NOT NULL COMMENT '文件id',
+  `create_by` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`article_id`, `oss_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '文章内容' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_article_content
 -- ----------------------------
+INSERT INTO `sys_article_content` VALUES (311558139885780992, 311558329426247680, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_article_content` VALUES (2049152412669284354, 311558040455479296, NULL, NULL, NULL, NULL);
+
+-- ----------------------------
+-- Table structure for sys_article_content_history
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_article_content_history`;
+CREATE TABLE `sys_article_content_history`  (
+  `id` bigint NOT NULL COMMENT '主键',
+  `article_id` bigint NOT NULL COMMENT '文章ID',
+  `oss_id` bigint NOT NULL COMMENT '关联OSS文件ID（被替换的旧版本）',
+  `version` int NOT NULL COMMENT '版本号，每篇文章独立自增',
+  `replaced_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '操作人',
+  `replaced_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '替换时间',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '备注',
+  `create_by` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_article_id`(`article_id` ASC) USING BTREE,
+  INDEX `idx_article_version`(`article_id` ASC, `version` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '文章内容版本历史表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of sys_article_content_history
+-- ----------------------------
+INSERT INTO `sys_article_content_history` VALUES (311553815180738560, 2049152412669284354, 310800365245431808, 1, 'admin', '2026-05-10 01:23:38', '内容覆盖更新', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_article_content_history` VALUES (311555057541971968, 2049152412669284354, 311553816514527232, 2, 'admin', '2026-05-10 01:28:34', '内容覆盖更新', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_article_content_history` VALUES (311555568131375104, 2049152412669284354, 311555057646829568, 3, 'admin', '2026-05-10 01:30:36', '内容覆盖更新', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_article_content_history` VALUES (311556546410840064, 2049152412669284354, 311555568232038400, 4, 'admin', '2026-05-10 01:34:29', '内容覆盖更新', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_article_content_history` VALUES (311558038849060864, 2049152412669284354, 311556546461171712, 5, 'admin', '2026-05-10 01:40:25', '内容覆盖更新', NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_article_tag_rel
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_article_tag_rel`;
 CREATE TABLE `sys_article_tag_rel`  (
-  `id` bigint NULL DEFAULT NULL,
   `article_id` bigint NOT NULL COMMENT '文章id',
   `tag_id` bigint NOT NULL COMMENT '标签id',
-  PRIMARY KEY (`tag_id`, `article_id`) USING BTREE,
-  UNIQUE INDEX `sys_article_tag_rel_pk`(`id` ASC) USING BTREE
+  PRIMARY KEY (`tag_id`, `article_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '文章标签关系表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_article_tag_rel
 -- ----------------------------
+INSERT INTO `sys_article_tag_rel` VALUES (311558139885780992, 2053410790765584385);
+INSERT INTO `sys_article_tag_rel` VALUES (311897078240772096, 2053410790765584385);
+INSERT INTO `sys_article_tag_rel` VALUES (311558139885780992, 7346097769171390464);
+INSERT INTO `sys_article_tag_rel` VALUES (311897078240772096, 7346097904244756480);
+INSERT INTO `sys_article_tag_rel` VALUES (311897078240772096, 7346097942756855808);
 
 -- ----------------------------
 -- Table structure for sys_category
@@ -96,13 +137,44 @@ CREATE TABLE `sys_category`  (
   `id` bigint NOT NULL COMMENT '分类id',
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NOT NULL COMMENT '分类名',
   `is_deleted` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT NULL COMMENT '删除标志',
-  PRIMARY KEY (`name`) USING BTREE
+  `create_by` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '文章分类' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_category
 -- ----------------------------
-INSERT INTO `sys_category` VALUES (7346094390013595648, '分类1', NULL);
+INSERT INTO `sys_category` VALUES (307182234019168256, '分类2', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `sys_category` VALUES (311779030943006720, 'Java', NULL, 1, '2026-05-10 16:18:34', NULL, NULL);
+INSERT INTO `sys_category` VALUES (311780183873290240, 'Spring', NULL, 1, '2026-05-10 16:23:08', 1, '2026-05-10 16:23:08');
+
+-- ----------------------------
+-- Table structure for sys_config
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_config`;
+CREATE TABLE `sys_config`  (
+  `id` bigint NOT NULL COMMENT '主键ID',
+  `config_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NOT NULL COMMENT '配置键',
+  `config_value` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT '' COMMENT '配置值',
+  `create_by` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `create_time` datetime NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_by` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `update_time` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_deleted` tinyint NULL DEFAULT 0 COMMENT '删除标志(0正常 1删除)',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_config_key`(`config_key` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '站点配置表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_config
+-- ----------------------------
+INSERT INTO `sys_config` VALUES (1, 'site_name', '我的博客', NULL, '2026-05-16 00:00:00', NULL, '2026-05-16 00:00:00', 0);
+INSERT INTO `sys_config` VALUES (2, 'copyright', '© 2026 xxx', NULL, '2026-05-16 00:00:00', NULL, '2026-05-16 00:00:00', 0);
+INSERT INTO `sys_config` VALUES (3, 'github', 'https://github.com/NewStudyAccount/project_blog', NULL, '2026-05-16 00:00:00', NULL, '2026-05-16 15:16:43', 0);
+INSERT INTO `sys_config` VALUES (4, 'beian', '京ICP备xxxxx号', NULL, '2026-05-16 00:00:00', NULL, '2026-05-16 00:00:00', 0);
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -117,49 +189,61 @@ CREATE TABLE `sys_menu`  (
   `parent_id` int NULL DEFAULT NULL COMMENT '父级id',
   `path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT NULL COMMENT '路由地址',
   `component` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT NULL COMMENT '组件路径',
-  `component_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT NULL,
+  `component_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT NULL COMMENT '组件名称',
+  `status` int NOT NULL DEFAULT 0 COMMENT '状态',
   PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2002 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 3006 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_menu
 -- ----------------------------
-INSERT INTO `sys_menu` VALUES (1, '系统管理', 's', 'M', 1, 0, '/system', NULL, NULL);
-INSERT INTO `sys_menu` VALUES (2, '文章管理', 's', 'M', 2, 0, '/blog', NULL, NULL);
-INSERT INTO `sys_menu` VALUES (1001, '用户管理', 'test:001', 'C', 1, 1, '/system/user', 'system/user/index', 'User');
-INSERT INTO `sys_menu` VALUES (1002, '角色列表', 'confirm:002', 'C', 2, 1, '/system/role', 'system/role/index', 'Role');
-INSERT INTO `sys_menu` VALUES (1003, '菜单列表', 'test:002', 'C', 3, 1, '/system/menu', 'system/menu/index', 'Menu');
-INSERT INTO `sys_menu` VALUES (2001, '标签列表', 's', 'C', 1, 2, '/blog/tag', 'blog/tag/index', NULL);
+INSERT INTO `sys_menu` VALUES (1, '系统管理', 's', 'M', 1, 0, '/system', NULL, NULL, 0);
+INSERT INTO `sys_menu` VALUES (2, '博客管理', 's', 'M', 2, 0, '/blog', NULL, NULL, 0);
+INSERT INTO `sys_menu` VALUES (3, 'OSS存储', 's', 'M', 99, 0, '/oss', NULL, NULL, 0);
+INSERT INTO `sys_menu` VALUES (4, '代码生成器', 's', 'M', 99, 0, '/generator', NULL, NULL, 0);
+INSERT INTO `sys_menu` VALUES (1001, '用户管理', 'test:001', 'C', 1, 1, '/system/user', 'system/user/index', 'User', 0);
+INSERT INTO `sys_menu` VALUES (1002, '角色管理', 'confirm:002', 'C', 2, 1, '/system/role', 'system/role/index', 'Role', 0);
+INSERT INTO `sys_menu` VALUES (1003, '菜单管理', 'test:002', 'C', 3, 1, '/system/menu', 'system/menu/index', 'Menu', 0);
+INSERT INTO `sys_menu` VALUES (2001, '分类管理', 's', 'C', 99, 2, '/blog/category', 'blog/category/index', NULL, 0);
+INSERT INTO `sys_menu` VALUES (2002, '标签管理', 's', 'C', 99, 2, '/blog/tag', 'blog/tag/index', NULL, 0);
+INSERT INTO `sys_menu` VALUES (2003, '文章管理', 's', 'C', 1, 2, '/blog/article', 'blog/article/index', NULL, 0);
+INSERT INTO `sys_menu` VALUES (3001, 'OSS配置', 's', 'C', 99, 3, '/oss/config', 'oss/config/index', 'OSS配置', 0);
+INSERT INTO `sys_menu` VALUES (3002, 'OSS文件', 's', 'C', 99, 3, '/oss/file', 'oss/file/index', 'OSS文件', 0);
 
 -- ----------------------------
 -- Table structure for sys_oss_config
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_oss_config`;
-CREATE TABLE IF NOT EXISTS `sys_oss_config` (
-    `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-    `config_name` VARCHAR(100) NOT NULL COMMENT '配置名称（唯一标识）',
-    `provider` VARCHAR(50) NOT NULL COMMENT '提供商类型（aliyun、minio等）',
-    `endpoint` VARCHAR(255) NOT NULL COMMENT '服务端点',
-    `access_key` VARCHAR(255) NOT NULL COMMENT '访问密钥',
-    `secret_key` VARCHAR(255) NOT NULL COMMENT '秘密密钥',
-    `bucket_name` VARCHAR(100) NOT NULL COMMENT '存储桶名称',
-    `region` VARCHAR(50) DEFAULT NULL COMMENT '区域（可选）',
-    `extra_config` TEXT DEFAULT NULL COMMENT 'JSON格式的扩展配置',
-    `is_active` TINYINT(1) NOT NULL DEFAULT 1 COMMENT '是否启用（1启用，0禁用）',
-    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_config_name` (`config_name`),
-    KEY `idx_provider` (`provider`),
-    KEY `idx_is_active` (`is_active`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='OSS配置表';
+CREATE TABLE `sys_oss_config`  (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `config_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '配置名称（唯一标识）',
+  `provider` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '提供商类型（aliyun、minio等）',
+  `endpoint` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '服务端点',
+  `access_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '访问密钥',
+  `secret_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '秘密密钥',
+  `bucket_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '存储桶名称',
+  `region` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '区域（可选）',
+  `extra_config` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'JSON格式的扩展配置',
+  `is_active` tinyint NOT NULL DEFAULT 1 COMMENT '是否启用（1启用，0禁用）',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_by` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_config_name`(`config_name` ASC) USING BTREE,
+  INDEX `idx_provider`(`provider` ASC) USING BTREE,
+  INDEX `idx_is_active`(`is_active` ASC) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = 'OSS配置表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of sys_oss_config
 -- ----------------------------
-INSERT INTO `sys_oss_config` (`config_name`, `provider`, `endpoint`, `access_key`, `secret_key`, `bucket_name`, `region`, `extra_config`, `is_active`) VALUES
-('aliyun-default', 'aliyun', 'https://oss-cn-hangzhou.aliyuncs.com', 'your-access-key-id', 'your-access-key-secret', 'my-bucket', 'cn-hangzhou', NULL, 0),
-('minio-local', 'minio', 'http://192.168.99.100:9000', 'c49ak3akZPzJpI0EoyUs', 'LQX4Cu3IbZd9nTr5g1LGQJYkTa5J3H5PVpQmuMBL', 'my-bucket', NULL, '{"pathStyleAccess": true}', 1);
+INSERT INTO `sys_oss_config` VALUES (1, 'aliyun-default', 'aliyun', 'https://oss-cn-shanghai.aliyuncs.com', '1223', '456', 'my-project-blog', '', NULL, 0, '2026-04-10 15:28:25', '2026-05-17 16:36:54', NULL, NULL, 1, '2026-05-18 00:11:05');
+INSERT INTO `sys_oss_config` VALUES (2, 'minio-local', 'minio', 'http://192.168.99.100:9000', 'c49ak3akZPzJpI0EoyUs', 'LQX4Cu3IbZd9nTr5g1LGQJYkTa5J3H5PVpQmuMBL', 'my-bucket', NULL, '{\"pathStyleAccess\": true}', 1, '2026-04-10 15:28:25', '2026-05-17 16:36:42', NULL, NULL, 1, '2026-05-18 00:11:10');
+INSERT INTO `sys_oss_config` VALUES (3, '12', '1', '3', '1', '1', '1', '1', NULL, 0, '2026-04-20 17:08:52', '2026-04-20 17:08:52', NULL, NULL, NULL, NULL);
+
 -- ----------------------------
 -- Table structure for sys_oss_file
 -- ----------------------------
@@ -170,15 +254,47 @@ CREATE TABLE `sys_oss_file`  (
   `original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `file_suffix` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `file_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `content_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_by` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`oss_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 314439584333430785 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_oss_file
 -- ----------------------------
-INSERT INTO `sys_oss_file` VALUES (1, '0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'https://qjj-learn.oss-cn-shanghai.aliyuncs.com/test2/0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg');
-INSERT INTO `sys_oss_file` VALUES (2, '4dcac91a-d2df-4e5b-b926-16998b2d5ed1.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'https://qjj-learn.oss-cn-shanghai.aliyuncs.com/test2/4dcac91a-d2df-4e5b-b926-16998b2d5ed1.jpg');
-INSERT INTO `sys_oss_file` VALUES (3, 'c76a6bc5-8225-414d-b4d9-a7340034775b.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'https://qjj-learn.oss-cn-shanghai.aliyuncs.com/test3/c76a6bc5-8225-414d-b4d9-a7340034775b.jpg');
+INSERT INTO `sys_oss_file` VALUES (1, '0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'https://qjj-learn.oss-cn-shanghai.aliyuncs.com/test2/0b52a287-cbfe-4e96-b94b-88a8362f6bae.jpg', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (2, '4dcac91a-d2df-4e5b-b926-16998b2d5ed1.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'http://qjj-learn.oss-cn-shanghai.aliyuncs.com/test2/4dcac91a-d2df-4e5b-b926-16998b2d5ed1.jpg', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (3, 'c76a6bc5-8225-414d-b4d9-a7340034775b.jpg', 'QQ图片20231105182412.jpg', 'jpg', 'http://qjj-learn.oss-cn-shanghai.aliyuncs.com/test2/c76a6bc5-8225-414d-b4d9-a7340034775b.jpg', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (4, '16288477-fc46-41f7-a5e4-a833becb7f2c.png', 'QQ截图20240407211705.png', 'png', 'http://192.168.99.100:9000/my-bucket/16288477-fc46-41f7-a5e4-a833becb7f2c.png', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (5, 'f0a5f327-a6c5-4e65-bd4e-eb68325a6d9f.png', 'QQ截图20240407211705.png', 'png', 'http://192.168.99.100:9000/my-bucket/f0a5f327-a6c5-4e65-bd4e-eb68325a6d9f.png', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (6, 'af2fb449-394f-4624-9104-5495fd97333e.png', 'QQ截图20240407211705.png', 'png', 'http://192.168.99.100:9000/my-bucket/af2fb449-394f-4624-9104-5495fd97333e.png', '', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (7, '80b56b98-6297-454d-a93c-671ebe376ad1.png', 'QQ截图20240407211705.png', 'png', 'http://192.168.99.100:9000/my-bucket/80b56b98-6297-454d-a93c-671ebe376ad1.png', 'image/png', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (307551693804142592, 'e229797a-f337-477d-9802-ffb5bc47edb2.md', 'ssss.md', 'md', 'http://192.168.99.100:9000/my-bucket/e229797a-f337-477d-9802-ffb5bc47edb2.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (307552411755741184, '9b598633-d7e5-44fb-a65f-20647aa39358.md', 'ssss.md', 'md', 'http://192.168.99.100:9000/my-bucket/9b598633-d7e5-44fb-a65f-20647aa39358.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (307552632485183488, 'c01d98f8-870c-425a-8f3e-77315c032df6.md', 'ssss.md', 'md', 'http://192.168.99.100:9000/my-bucket/c01d98f8-870c-425a-8f3e-77315c032df6.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (310793926762299392, 'cb2e8713-0610-4d8c-a7e4-3027c9171a29.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/cb2e8713-0610-4d8c-a7e4-3027c9171a29.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (310798154947887104, '4a09e20e-e8c5-4484-8925-c072eb90360a.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/4a09e20e-e8c5-4484-8925-c072eb90360a.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (310798596343857152, 'b1d89832-9d0f-4b7c-a08c-c9c3871f0cb0.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/b1d89832-9d0f-4b7c-a08c-c9c3871f0cb0.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (310800365245431808, '1c16c242-b7ad-4ce1-86d3-2cf9bf168597.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/1c16c242-b7ad-4ce1-86d3-2cf9bf168597.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311553816514527232, '5cf1741e-948c-4938-bbb7-a52bcf16637e.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/5cf1741e-948c-4938-bbb7-a52bcf16637e.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311555058942869504, '07db0889-2b51-488a-8738-80fc4489a369.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/07db0889-2b51-488a-8738-80fc4489a369.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311555568341090304, '67e436ef-2377-498b-bfa6-bd38b3b6c34a.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/67e436ef-2377-498b-bfa6-bd38b3b6c34a.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311556756302200832, 'a50612d2-e907-4af2-b897-5595733a8f52.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/a50612d2-e907-4af2-b897-5595733a8f52.md', 'text/markdown', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_oss_file` VALUES (311558040455479296, '90b4cdbe-9b59-40a7-b177-57e65f5ebc26.md', '我的第一篇文章.md', 'md', 'http://192.168.99.100:9000/my-bucket/90b4cdbe-9b59-40a7-b177-57e65f5ebc26.md', 'text/markdown', NULL, NULL, 1, '2026-05-17 00:43:22');
+INSERT INTO `sys_oss_file` VALUES (311558329426247680, '11c91e67-6014-467d-bff4-ca14e3e8e42a.md', '而是对于个人.md', 'md', 'http://192.168.99.100:9000/my-bucket/11c91e67-6014-467d-bff4-ca14e3e8e42a.md', 'text/markdown', NULL, NULL, 1, '2026-05-10 23:53:05');
+INSERT INTO `sys_oss_file` VALUES (311889983361515520, '856b1527-82cf-4c9e-902d-7246986855b7.png', '1fb8f3d4-1f1e-4240-8fe3-f24aff3492e8.png', 'png', 'http://192.168.99.100:9000/my-bucket/856b1527-82cf-4c9e-902d-7246986855b7.png', 'image/png', 1, '2026-05-10 23:39:27', 1, '2026-05-10 23:39:27');
+INSERT INTO `sys_oss_file` VALUES (311897047655776256, 'bc209ee4-7f36-4679-a60d-1f66878f7171.png', '3ec2fec0-ae53-4d59-a338-7a11678b070f.png', 'png', 'http://192.168.99.100:9000/my-bucket/bc209ee4-7f36-4679-a60d-1f66878f7171.png', 'image/png', 1, '2026-05-11 00:07:31', 1, '2026-05-11 00:07:31');
+INSERT INTO `sys_oss_file` VALUES (313929406580260864, '635d3b2c-0ed2-4710-863b-932b62cfff0c.png', '3ec2fec0-ae53-4d59-a338-7a11678b070f.png', 'png', 'http://192.168.99.100:9000/my-bucket/635d3b2c-0ed2-4710-863b-932b62cfff0c.png', 'image/png', 1, '2026-05-16 14:43:23', 1, '2026-05-16 14:43:23');
+INSERT INTO `sys_oss_file` VALUES (314039598311538688, 'd02ba8bc-9ab2-4898-a469-074228ed8302.jpg', 'Camera_1040g0k031vqnih891m005ofg1vd8cjqqqvglh6o.jpg', 'jpg', 'http://192.168.99.100:9000/my-bucket/d02ba8bc-9ab2-4898-a469-074228ed8302.jpg', 'image/jpeg', 1, '2026-05-16 22:01:15', 1, '2026-05-16 22:01:15');
+INSERT INTO `sys_oss_file` VALUES (314080386609315840, 'dc04d575-1517-453e-ac84-24d6d15edd59.png', '3ec2fec0-ae53-4d59-a338-7a11678b070f.png', 'png', 'http://192.168.99.100:9000/my-bucket/dc04d575-1517-453e-ac84-24d6d15edd59.png', 'image/png', 1, '2026-05-17 00:43:20', 1, '2026-05-17 00:43:20');
+INSERT INTO `sys_oss_file` VALUES (314434768815259648, 'f801034c-e2d3-459b-a3f5-ee8d4186da2f.png', '1fb8f3d4-1f1e-4240-8fe3-f24aff3492e8.png', 'png', 'http://192.168.99.100:9000/my-bucket/f801034c-e2d3-459b-a3f5-ee8d4186da2f.png', 'image/png', 1, '2026-05-18 00:11:31', 1, '2026-05-18 00:11:31');
+INSERT INTO `sys_oss_file` VALUES (314435084809928704, '3c39c024-5ef4-4949-a3f9-6a30b1c972b2.jpg', 'Camera_1040g0k031vqnih891m0g5ofg1vd8cjqqp49ice0.jpg', 'jpg', 'http://192.168.99.100:9000/my-bucket/3c39c024-5ef4-4949-a3f9-6a30b1c972b2.jpg', 'image/jpeg', 1, '2026-05-18 00:12:46', 1, '2026-05-18 00:12:46');
+INSERT INTO `sys_oss_file` VALUES (314436842059726848, '1d310652-9f63-4f02-9adb-c3c079a1668c.jpg', 'Camera_1040g0k031vqnih891m0g5ofg1vd8cjqqp49ice0.jpg', 'jpg', 'http://192.168.99.100:9000/my-bucket/1d310652-9f63-4f02-9adb-c3c079a1668c.jpg', 'image/jpeg', 1, '2026-05-18 00:19:45', 1, '2026-05-18 00:19:45');
+INSERT INTO `sys_oss_file` VALUES (314437774034075648, '6ccb00e0-37d6-44a8-8213-2a5ad24c0025.png', '86cfe33d-33d6-48b6-976c-0e7b60962446.png', 'png', 'https://oss-cn-shanghai.aliyuncs.com/my-project-blog/6ccb00e0-37d6-44a8-8213-2a5ad24c0025.png', 'image/png', 1, '2026-05-18 00:23:27', 1, '2026-05-18 00:23:27');
+INSERT INTO `sys_oss_file` VALUES (314439584333430784, 'd959f55b-081c-4ab2-98f7-17e79fa9fa13.jpg', 'Camera_1040g0k031vqnih891m005ofg1vd8cjqqqvglh6o.jpg', 'jpg', '\r\nhttps://my-project-blog.oss-cn-shanghai.aliyuncs.com/d959f55b-081c-4ab2-98f7-17e79fa9fa13.jpg', 'image/jpeg', 1, '2026-05-18 00:30:39', 1, '2026-05-18 00:30:39');
 
 -- ----------------------------
 -- Table structure for sys_role
@@ -214,6 +330,10 @@ INSERT INTO `sys_role_menu` VALUES (1, 1001);
 INSERT INTO `sys_role_menu` VALUES (1, 1002);
 INSERT INTO `sys_role_menu` VALUES (1, 1003);
 INSERT INTO `sys_role_menu` VALUES (1, 2001);
+INSERT INTO `sys_role_menu` VALUES (2, 1);
+INSERT INTO `sys_role_menu` VALUES (2, 1001);
+INSERT INTO `sys_role_menu` VALUES (2, 2);
+INSERT INTO `sys_role_menu` VALUES (2, 3);
 
 -- ----------------------------
 -- Table structure for sys_tag
@@ -222,18 +342,23 @@ DROP TABLE IF EXISTS `sys_tag`;
 CREATE TABLE `sys_tag`  (
   `id` bigint NOT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NOT NULL COMMENT '标签名',
-  `id_deleted` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT NULL,
-  PRIMARY KEY (`name`) USING BTREE
+  `is_deleted` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT '0' COMMENT '删除标志',
+  `create_by` bigint NULL DEFAULT NULL COMMENT '创建人ID',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` bigint NULL DEFAULT NULL COMMENT '更新人ID',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '标签' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_tag
 -- ----------------------------
-INSERT INTO `sys_tag` VALUES (7346094977862078464, '标签1', NULL);
-INSERT INTO `sys_tag` VALUES (7346097769171390464, '标签2', NULL);
-INSERT INTO `sys_tag` VALUES (7346097904244756480, '标签3', NULL);
-INSERT INTO `sys_tag` VALUES (7346097918056599552, '标签4', NULL);
-INSERT INTO `sys_tag` VALUES (7346097942756855808, '标签5', NULL);
+INSERT INTO `sys_tag` VALUES (2048796667524272129, '标签1', '0', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_tag` VALUES (2053410790765584385, '微服务', '0', 1, '2026-05-10 17:44:18', 1, '2026-05-10 17:44:18');
+INSERT INTO `sys_tag` VALUES (7346097769171390464, '标签222', '0', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_tag` VALUES (7346097904244756480, '标签3', '0', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_tag` VALUES (7346097918056599552, '标签4', '0', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_tag` VALUES (7346097942756855808, '标签5', '0', NULL, NULL, NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_template_menu
@@ -369,28 +494,33 @@ CREATE TABLE `sys_user`  (
   `update_date` datetime NULL DEFAULT NULL COMMENT '修改时间',
   `is_deleted` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_german2_ci NULL DEFAULT '0' COMMENT '逻辑删除0：有效，1删除',
   PRIMARY KEY (`user_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
 INSERT INTO `sys_user` VALUES (1, 'admin', '$2a$10$xB8E7korwpq54qUErSS1Re.yhFDjHDxc67P2e6nradgGBnLnC3zvG', NULL, '1', NULL, NULL, NULL, NULL, NULL, '0');
+INSERT INTO `sys_user` VALUES (2, 'test', '123456', NULL, '0', '13445341234', NULL, NULL, NULL, NULL, '0');
+INSERT INTO `sys_user` VALUES (3, 'terw', '$2a$10$.GfeeC3xmREyZr8QjM9naOl33kFtg/8daUvNThWsusJau04957CLC', NULL, '0', '13456780987', NULL, NULL, NULL, NULL, '0');
+INSERT INTO `sys_user` VALUES (4, 'tre4', '$2a$10$QvGfYFlmhKzonbwvc2vEVOSFeTenIvX9q.TmPPithx0MEq7mRiDbS', '', '0', '13456781234', NULL, NULL, NULL, NULL, '0');
+INSERT INTO `sys_user` VALUES (5, 'qwer', '$2a$10$tgpAtMr1q0TvhG.qkUZ/VOWFCU00lNuBlD3PUA7vPiIaIWlK.p9aK', '', '0', '13487655678', NULL, NULL, NULL, NULL, '1');
 
 -- ----------------------------
 -- Table structure for sys_user_role
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_user_role`;
 CREATE TABLE `sys_user_role`  (
-  `id` int NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
-  `role_id` bigint NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '用户角色关联表' ROW_FORMAT = DYNAMIC;
+  `role_id` bigint NOT NULL
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_german2_ci COMMENT = '用户角色关联表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user_role
 -- ----------------------------
-INSERT INTO `sys_user_role` VALUES (1, 1, 1);
-INSERT INTO `sys_user_role` VALUES (2, 2, 2);
+INSERT INTO `sys_user_role` VALUES (3, 2);
+INSERT INTO `sys_user_role` VALUES (1, 2);
+INSERT INTO `sys_user_role` VALUES (2, 2);
+INSERT INTO `sys_user_role` VALUES (4, 2);
+INSERT INTO `sys_user_role` VALUES (5, 2);
 
 SET FOREIGN_KEY_CHECKS = 1;

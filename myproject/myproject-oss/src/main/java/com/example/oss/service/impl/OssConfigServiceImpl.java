@@ -98,9 +98,14 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
         }
         
         baseMapper.updateById(sysOssConfig);
-        
 
-        
+        // 清除旧的客户端缓存
+        ossClientFactory.evictClient(existing.getConfigName());
+        // 如果修改了配置名称，也要清除新名称的缓存（防止残留）
+        if (!existing.getConfigName().equals(sysOssConfig.getConfigName())) {
+            ossClientFactory.evictClient(sysOssConfig.getConfigName());
+        }
+
         log.info("更新OSS配置成功: id={}", sysOssConfig.getId());
         return getById(sysOssConfig.getId());
     }
@@ -114,8 +119,10 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, SysOssCon
         }
         
         boolean result = baseMapper.deleteById(id) > 0;
-
-        
+        if (result) {
+            ossClientFactory.evictClient(existing.getConfigName());
+            log.info("删除OSS配置成功: id={}", id);
+        }
         return result;
     }
 
