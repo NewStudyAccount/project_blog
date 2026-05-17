@@ -56,10 +56,7 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
             String contentType = file.getContentType();
             ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,file.getBytes());
 
-            String endpoint = sysOssConfig.getEndpoint();
-            String bucketName = sysOssConfig.getBucketName();
-//            http://192.168.99.100:9000/my-bucket/62237aa2-b510-4acf-9c5e-32a94e953540.png
-            url = endpoint+"/"+bucketName+"/"+newFileName;
+            url = ossClientFactory.generateUrl(sysOssConfig, newFileName);
             SysOssFile sysOssFile = new SysOssFile(newFileName,originalFilename,split[1],url,contentType);
 
             insertSysOssFile(sysOssFile);
@@ -95,9 +92,7 @@ public class OssFileServiceImpl extends ServiceImpl<OssFileMapper, SysOssFile> i
 
 
         SysOssConfig sysOssConfig = sysOssConfigs.getFirst();
-        String endpoint = sysOssConfig.getEndpoint();
-        String bucketName = sysOssConfig.getBucketName();
-        url = endpoint+"/"+bucketName+"/"+newFileName;
+        url = ossClientFactory.generateUrl(sysOssConfig, newFileName);
 
         //执行上传文件
         ossClientFactory.uploadFile(sysOssConfig,newFileName,contentType,data);

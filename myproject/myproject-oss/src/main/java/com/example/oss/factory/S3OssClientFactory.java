@@ -164,6 +164,24 @@ public class S3OssClientFactory implements OssClientFactory {
     }
 
     @Override
+    public String generateUrl(SysOssConfig sysOssConfig, String objectName) {
+        String provider = sysOssConfig.getProvider();
+        String endpoint = sysOssConfig.getEndpoint();
+        String bucketName = sysOssConfig.getBucketName();
+
+        if ("aliyun".equals(provider)) {
+            // Virtual Hosted Style: https://bucket.endpoint/objectName
+            URI uri = URI.create(endpoint);
+            String scheme = uri.getScheme();
+            String host = uri.getHost();
+            return scheme + "://" + bucketName + "." + host + "/" + objectName;
+        } else {
+            // Path Style: endpoint/bucket/objectName (MinIO, AWS等)
+            return endpoint + "/" + bucketName + "/" + objectName;
+        }
+    }
+
+    @Override
     public void evictClient(String configName) {
         clientCache.invalidate(configName);
         log.info("S3客户端缓存已失效: configName={}", configName);

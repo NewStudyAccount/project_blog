@@ -43,6 +43,15 @@ public interface OssClientFactory {
     byte[] downloadFile(SysOssConfig sysOssConfig, String objectName);
 
     /**
+     * 生成文件访问 URL
+     *
+     * @param sysOssConfig OSS配置
+     * @param objectName   对象名称
+     * @return 文件访问 URL
+     */
+    String generateUrl(SysOssConfig sysOssConfig, String objectName);
+
+    /**
      * 清除指定配置名称的客户端缓存
      *
      * @param configName 配置名称
